@@ -1,0 +1,8 @@
+{
+    "name": "@starthub/err-middleware",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "dependencies": {
+        "express": "^5.1.0"
+    }
+}
