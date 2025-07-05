@@ -19,7 +19,7 @@ app.use(cookieParser())
 const PORT = process.env.PORT || 3000;
 
 app.get("/",() => {
-    console.log("we are here together !")
+    console.log("we are together !")
 })
 
 mongoose.connect(process.env.MONGODB_URI as string).then(()=>{
