@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
+import bcrypt from "bcryptjs";
 
 export interface IUser extends Document{
     name:string,
@@ -10,7 +11,7 @@ export interface IUser extends Document{
     provider:"email"|"google",
     intrests?:string[],
     description?:string,
-    friends:Types.ObjectId[]
+    friends?:Types.ObjectId[]
     github?:{
         accessToken:string,
         username:string,
@@ -49,22 +50,33 @@ const userSchema = new mongoose.Schema<IUser>({
     },
     intrests:{
         type:[String],
+        default:[]
     },
     description:{
         type:String
     },
-    friends:[
-        {
-            type:Schema.Types.ObjectId,
-            ref:"User"
-        }
-    ],
+    friends:{
+        type:[
+            {
+                type:Schema.Types.ObjectId,
+                ref:"User"
+            }
+        ],
+        default:[]
+    },
     github:{
         accessToken:String,
         username:String
     }
 },{
     timestamps:true
+})
+
+userSchema.pre("save",async function(next:any){
+    if(this.isModified('password')){
+        this.password = await bcrypt.hash(this.password,8);
+    };
+    next();
 })
 
 const User = mongoose.model<IUser>("User",userSchema)

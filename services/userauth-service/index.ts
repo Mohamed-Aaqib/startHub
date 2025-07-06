@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser"
 import { ErrorHandler, errorHandler } from "@starthub/err-middleware"
 import userRouter from "./routes/user"
 import authRouter from "./routes/auth"
+import Redis from "ioredis"
 
 dotenv.config({
     path:"../../.env"
@@ -23,7 +24,15 @@ app.use(express.json({limit:"50mb"}))
 app.use(express.urlencoded({extended:true}))
 app.use(errorHandler)
 
+const redisClient = () => {
+    if(process.env.REDIS_URL){
+        console.log("redis is connected")
+        return process.env.REDIS_URL
+    }
+    throw new Error('Redis connection failed')
+}
 
+export const redis = new Redis(redisClient())
 
 app.use("/v1/user",userRouter)
 app.use("/v1/auth",authRouter)
