@@ -1,8 +1,11 @@
-import express from "express"
+import express, { NextFunction, Request, Response } from "express"
 import cors from "cors"
 import mongoose from "mongoose"
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
+import { ErrorHandler, errorHandler } from "@starthub/err-middleware"
+import userRouter from "./routes/user"
+import authRouter from "./routes/auth"
 
 dotenv.config({
     path:"../../.env"
@@ -18,6 +21,18 @@ app.use(cookieParser())
 
 app.use(express.json({limit:"50mb"}))
 app.use(express.urlencoded({extended:true}))
+app.use(errorHandler)
+
+
+
+app.use("/v1/user",userRouter)
+app.use("/v1/auth",authRouter)
+
+
+app.all("/{*any}",(req:Request,res:Response,next:NextFunction)=>{
+    next(new ErrorHandler(`Route ${req.originalUrl} not found`,404));
+})
+
 
 const PORT = process.env.PORT_AUTH ||4000
 
