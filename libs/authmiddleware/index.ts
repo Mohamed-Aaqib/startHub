@@ -4,11 +4,16 @@ import {generateAccessTokenJWT,generateRefreshTokenJWT,accessTokenOptions,refres
 import Redis from "ioredis"
 
 const redisClient = () => {
-    if(process.env.REDIS_URL){
-        console.log("redis is connected")
-        return process.env.REDIS_URL
+    try {
+        if(process.env.REDIS_URL){
+            console.log("redis is connected")
+            return process.env.REDIS_URL
+        }
+        throw new Error('Redis connection failed')    
+    } catch (error) {
+        console.error("ioredis error has occured: ",error)
+        return ""
     }
-    throw new Error('Redis connection failed')
 }
 
 export const redis = new Redis(redisClient())

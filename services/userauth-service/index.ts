@@ -26,11 +26,16 @@ app.use(express.urlencoded({extended:true}))
 app.use(errorHandler)
 
 const redisClient = () => {
-    if(process.env.REDIS_URL){
-        console.log("redis is connected")
-        return process.env.REDIS_URL
+    try {
+        if(process.env.REDIS_URL){
+            console.log("redis is connected")
+            return process.env.REDIS_URL
+        }
+        throw new Error('Redis connection failed')    
+    } catch (error) {
+        console.error("ioredis error has occured: ")
+        return ""
     }
-    throw new Error('Redis connection failed')
 }
 
 export const redis = new Redis(redisClient())
@@ -40,7 +45,7 @@ const startServer = async () => {
         await connectRabbit();
         console.log('Connected to RabbitMQ');
     } catch (error) {
-        console.error('Failed to start the server:', error);
+        console.error('Failed to start the server:');
     }
 }
 startServer();

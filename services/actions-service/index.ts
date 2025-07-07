@@ -25,6 +25,7 @@ app.get("/",() => {
     console.log("we are together !")
 })
 
+// TODO: delete unused connections after opening them
 const start = async () => {
     try {
         await startEmailConsumer();
