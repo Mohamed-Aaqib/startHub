@@ -11,11 +11,8 @@ export class ErrorHandler extends Error{
 }
 
 export const errorHandler = async (err:any,req:Request,res:Response,next:NextFunction) => {
-
     err.statusCode = err.statusCode || 500;
     err.message = err.message || "internal error";
-
-    console.log(err.name)
 
     if(err.name == "CastError"){
         const message = `Resource not found ${err.path}`;

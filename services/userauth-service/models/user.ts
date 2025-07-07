@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 export interface IUser extends Document{
     name:string,
     email:string,
-    password:string,
+    password?:string,
     profileCompleted:boolean,
     field?:"cs"|"science"|"business"|"engineer"|"media",
     role?:string,
@@ -15,7 +15,8 @@ export interface IUser extends Document{
     github?:{
         accessToken:string,
         username:string,
-    }
+    },
+    googleId?:string
 }
 
 const userSchema = new mongoose.Schema<IUser>({
@@ -30,7 +31,6 @@ const userSchema = new mongoose.Schema<IUser>({
     },
     password:{
         type:String,
-        required:true
     },
     profileCompleted:{
         type:Boolean,
@@ -67,13 +67,17 @@ const userSchema = new mongoose.Schema<IUser>({
     github:{
         accessToken:String,
         username:String
+    },
+    googleId:{
+        type:String,
+        required:false
     }
 },{
     timestamps:true
 })
 
 userSchema.pre("save",async function(next:any){
-    if(this.isModified('password')){
+    if(this.isModified('password') && this.password){
         this.password = await bcrypt.hash(this.password,8);
     };
     next();

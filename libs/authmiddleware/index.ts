@@ -1,16 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken"
 import {generateAccessTokenJWT,generateRefreshTokenJWT,accessTokenOptions,refreshTokenOptions} from "@starthub/ref-acc-token"
+import Redis from "ioredis"
 
-
-declare global{
-    namespace Express{
-        interface Request{
-            user?:any;
-        }
+const redisClient = () => {
+    if(process.env.REDIS_URL){
+        console.log("redis is connected")
+        return process.env.REDIS_URL
     }
+    throw new Error('Redis connection failed')
 }
 
+export const redis = new Redis(redisClient())
 
 
 export const updateAccessToken = async (req:Request,res:Response,next:NextFunction) => {
@@ -21,16 +22,22 @@ export const updateAccessToken = async (req:Request,res:Response,next:NextFuncti
             throw new Error("Time to logout!");
         }
 
-        // const accessToken = generateAccessTokenJWT(user)
-        // const refreshToken = generateRefreshTokenJWT(user)
-        // req.user = 'aaa'
+        const user = await redis.get(decode.id);
+        if(!user) throw new Error("Please login for resources");
+        
+        const mainUser = JSON.parse(user);
+        const accessToken = generateAccessTokenJWT(user)
+        const refreshToken = generateRefreshTokenJWT(user)
+        req.user = mainUser
 
-        // res.cookie("access_token",accessToken,accessTokenOptions)
-        // res.cookie("refresh_token",refreshToken,refreshTokenOptions)
+        res.cookie("access_token",accessToken,accessTokenOptions)
+        res.cookie("refresh_token",refreshToken,refreshTokenOptions)
 
+        await redis.set(mainUser._id,JSON.stringify(mainUser),"EX",604800)
+        res.status(201)
 
-    } catch (error) {
-        next(error)
+    } catch (error:any) {
+        res.status(400).json({message:`error: ${error.message}`})
     }
 }
 
@@ -48,17 +55,19 @@ export const isAuthenticated = async (req:Request,res:Response,next:NextFunction
 
         if(decodedToken.exp && decodedToken.exp <= Date.now()/1000){
             try {
-                //updateAccessToken
+                updateAccessToken(req,res,next);
             } catch (error) {   
                 throw new Error("Couldnt update tokens")
             }
         }else{
-            req.user = JSON.parse("/")
+            const user = await redis.get(decodedToken.id)
+            if(!user) throw new Error("user not found")
+            req.user = JSON.parse(user)
         }
 
         next()
 
-    } catch (error) {
-        next(error)    
+    } catch (error:any) {
+        res.status(400).json({message:`error: ${error.message}`})
     }
 }

@@ -4,6 +4,9 @@ import { ErrorHandler } from "@starthub/err-middleware";
 import bcrypt from "bcryptjs";
 import { sendToken } from "../helpers/sendToken";
 import { redis } from "..";
+import { OAuth2Client } from "google-auth-library";
+import jwt from "jsonwebtoken";
+import { publishQueue } from "../rabbit/publisher";
 
 declare global{
     namespace Express{
@@ -20,15 +23,36 @@ export const registerUser = async (req:Request,res:Response,next:NextFunction) =
         const user = await User.findOne({email})
         if(user) throw new ErrorHandler("Email already exists",400);
 
-        //email
-        const mainUser = await User.create({
-            name,
+        const currUser:{name:string,email:string,password:string} = {
             email,
-            password,
-            provider:"email"
-        }); 
+            name,
+            password
+        }
 
-        res.status(200).json({message:"successfully logged in"})
+        const activationCode = Math.floor((Math.random() * 8000)+1000).toString();
+        const token = jwt.sign({currUser,activationCode},process.env.ACTIVATION_SECRET || '',{
+            expiresIn:"5m"
+        })
+
+        const emailData = {
+            currUser:{
+                name:currUser.name
+            },
+            activationCode
+        }
+        try {
+            await publishQueue({
+                email:currUser.email,
+                subject:"Activate your account",
+                template:"activation-email.ejs",
+                data:emailData
+            })
+        } catch (error) {
+            next(error)
+        }
+        
+        res.status(201).json({message:"Please check your email for the verification code",activationCode,token})
+
     }catch(err){
         next(err);
     }
@@ -37,7 +61,31 @@ export const registerUser = async (req:Request,res:Response,next:NextFunction) =
 
 
 export const activateUser = async (req:Request,res:Response,next:NextFunction) => {
-    console.log("testing")
+    try {
+        const {activation_code,activation_token} = req.body;
+        const verifyToken:any = jwt.verify(activation_token,process.env.ACTIVATION_SECRET || '')
+    
+        if(verifyToken.activationCode != activation_code) throw new ErrorHandler("Invalid activation code",400);
+
+        const {email,password,name} = verifyToken.currUser
+        let existsUser = await User.findOne({
+            email
+        })
+
+        if(existsUser) throw new ErrorHandler("User already exists, please try again",404)
+        
+        existsUser = await User.create({
+            name,
+            email,
+            password,
+            provider:"email"
+        })
+
+        res.status(201).json({ok:true})
+
+    } catch (error) {
+        next(error)
+    }
 }
 
 
@@ -52,7 +100,7 @@ export const signInUser = async (req:Request,res:Response,next:NextFunction) => 
         })
         if(!user) throw new ErrorHandler("No user found please try again",400);
 
-        const hashedPass = await bcrypt.compare(password,user.password);
+        const hashedPass = await bcrypt.compare(password,user?.password as string);
         if(!hashedPass) throw new ErrorHandler("Incorrect password please try again",400)
 
         sendToken(user,200,res);
@@ -67,12 +115,38 @@ export const signInUser = async (req:Request,res:Response,next:NextFunction) => 
 
 export const signInGoogleUser = async (req:Request,res:Response,next:NextFunction) => {
 
+    const {id_token} = req.body
+
     try{
-        console.log("testing function rapid 1")
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+        const ticket = await client.verifyIdToken({
+            idToken:id_token,
+            audience:process.env.GOOGLE_CLIENT_ID
+        })
+
+        const payload = ticket.getPayload();
+        if(!payload) throw new ErrorHandler("Invalid google login",404);
+
+        const {sub:googleId,email,name,picture} = payload
+        
+        let user = await User.findOne({
+            email
+        })
+
+        if(!user){
+            user = await User.create({
+                email,
+                name,
+                provider:"google",
+                googleId
+            })
+        }
+
+        sendToken(user,201,res);
+
     }catch(err){
         next(err);
     }
-
 
 }
 
