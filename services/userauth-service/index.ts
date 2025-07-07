@@ -7,6 +7,7 @@ import { ErrorHandler, errorHandler } from "@starthub/err-middleware"
 import userRouter from "./routes/user"
 import authRouter from "./routes/auth"
 import Redis from "ioredis"
+import { connectRabbit } from "./rabbit/publisher"
 
 dotenv.config({
     path:"../../.env"
@@ -33,6 +34,16 @@ const redisClient = () => {
 }
 
 export const redis = new Redis(redisClient())
+
+const startServer = async () => {
+    try {
+        await connectRabbit();
+        console.log('Connected to RabbitMQ');
+    } catch (error) {
+        console.error('Failed to start the server:', error);
+    }
+}
+startServer();
 
 app.use("/v1/user",userRouter)
 app.use("/v1/auth",authRouter)

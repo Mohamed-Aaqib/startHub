@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import mongoose from "mongoose"
 import cookieParser from "cookie-parser"
 import { errorHandler } from "@starthub/err-middleware"
+import { startEmailConsumer } from "./rabbit/consumer"
 
 dotenv.config({path:"../../.env"});
 
@@ -23,6 +24,17 @@ const PORT = process.env.PORT || 3000;
 app.get("/",() => {
     console.log("we are together !")
 })
+
+const start = async () => {
+    try {
+        await startEmailConsumer();
+        console.log("Email consumer is running");
+    } catch (error) {
+        console.error("message broker couldnt start")
+    }
+}
+start()
+
 
 mongoose.connect(process.env.MONGODB_URI as string).then(()=>{
     console.log("connected to mongodb")

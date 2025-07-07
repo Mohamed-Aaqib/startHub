@@ -48,7 +48,7 @@ export const registerUser = async (req:Request,res:Response,next:NextFunction) =
                 data:emailData
             })
         } catch (error) {
-            next(error)
+            return next(error)
         }
         
         res.status(201).json({message:"Please check your email for the verification code",activationCode,token})

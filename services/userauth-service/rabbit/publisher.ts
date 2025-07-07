@@ -9,6 +9,7 @@ dotenv.config({
 let channel:amqp.Channel;
 
 export const connectRabbit = async () => {
+    if(channel) return;
     const connection = await amqp.connect(process.env.RABBITMQ_URL as string);
     channel = await connection.createChannel();
     await channel.assertQueue('email-activation',{

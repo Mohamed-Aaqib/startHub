@@ -8,6 +8,7 @@ dotenv.config({
 })
 
 export const sendMail = async (payload:IAEmail) => {
+    console.log("are we sneding the mail",process.env.SMTP_HOST," and the email is ",process.env.SMTP_SERVICE)
     const transporter:Transporter = nodemailer.createTransport({
         host:process.env.SMTP_HOST,
         port:parseInt(process.env.SMTP_PORT || '587'),
@@ -22,6 +23,7 @@ export const sendMail = async (payload:IAEmail) => {
     const templatePath = path.join(__dirname,"../mails",template)
     const html:string = await ejs.renderFile(templatePath,data)
 
+    console.log("are we sneding the mail",data," and the email is ",email)
     await transporter.sendMail({
         from:process.env.SMTP_MAIL,
         to:email,
