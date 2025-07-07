@@ -81,7 +81,7 @@ export const activateUser = async (req:Request,res:Response,next:NextFunction) =
             provider:"email"
         })
 
-        res.status(201).json({ok:true})
+        sendToken(existsUser,200,res)
 
     } catch (error) {
         next(error)
