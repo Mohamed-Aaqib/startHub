@@ -55,8 +55,6 @@ export const sendMedia = async (req:Request,res:Response,next:NextFunction) => {
     }
 }
 
-
-
 export const updateMessage = async (req:Request,res:Response,next:NextFunction) => {
     try {
         const {messageId} = req.params;
@@ -100,7 +98,7 @@ export const deleteMessage = async (req:Request,res:Response,next:NextFunction) 
         if(!newMessage) throw new ErrorHandler("Couldn't delete message, please try again",400);
 
         res.status(200).json({newMessage})
-        
+
     } catch (error) {
         next(error)
     }
