@@ -4,12 +4,14 @@ import mongoose from "mongoose";
 import Chat from "../models/chat";
 
 export const inGroup = async (req:Request,res:Response,next:NextFunction) => {
-    const {chatId} = req.params;
+
+    const chatId = req.params.chatId || req.body.chatId;
+
     try {
-        if(!mongoose.Types.ObjectId.isValid(chatId)) throw new ErrorHandler("Chat is not available",400);
+        if(!chatId || !mongoose.Types.ObjectId.isValid(chatId)) throw new ErrorHandler("Chat is not available",400);
         const chat = await Chat.findOne({
             _id:chatId,
-            members:String(req.user?._id)
+            members:req.user?._id
         })
         if(!chat) throw new ErrorHandler("You have no access to this chat",400)
         next()
