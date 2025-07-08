@@ -5,6 +5,8 @@ import mongoose from "mongoose"
 import cookieParser from "cookie-parser"
 import { errorHandler } from "@starthub/err-middleware"
 import { startEmailConsumer } from "./rabbit/consumer"
+import chatRouter from "./routes/chat"
+import messageRouter from "./routes/message"
 
 dotenv.config({path:"../../.env"});
 
@@ -24,6 +26,10 @@ const PORT = process.env.PORT || 3000;
 app.get("/",() => {
     console.log("we are together !")
 })
+
+
+app.use("/v1/chat",chatRouter)
+app.use("/v1/message",messageRouter)
 
 // TODO: delete unused connections after opening them
 const start = async () => {

@@ -2,6 +2,36 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken"
 import {generateAccessTokenJWT,generateRefreshTokenJWT,accessTokenOptions,refreshTokenOptions} from "@starthub/ref-acc-token"
 import Redis from "ioredis"
+import { Document, Types } from "mongoose";
+
+
+
+export interface IUser extends Document{
+    name:string,
+    email:string,
+    password?:string,
+    profileCompleted:boolean,
+    field?:"cs"|"science"|"business"|"engineer"|"media",
+    role?:string,
+    provider:"email"|"google",
+    intrests?:string[],
+    description?:string,
+    friends?:Types.ObjectId[]
+    github?:{
+        accessToken:string,
+        username:string,
+    },
+    googleId?:string
+}
+
+declare global{
+    namespace Express{
+        interface Request{
+            user?:IUser;
+        }
+    }
+}
+
 
 const redisClient = () => {
     try {
