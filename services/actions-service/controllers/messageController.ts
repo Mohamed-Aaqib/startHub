@@ -93,15 +93,14 @@ export const deleteMessage = async (req:Request,res:Response,next:NextFunction) 
         },{
             $addToSet:{
                 deletedFor:{
-                    $each:{
-                        userIds
-                    }
+                    $each:userIds
                 }
             }
         },{new:true})
         if(!newMessage) throw new ErrorHandler("Couldn't delete message, please try again",400);
 
         res.status(200).json({newMessage})
+        
     } catch (error) {
         next(error)
     }
