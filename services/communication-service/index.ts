@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
 import {Server, Socket} from "socket.io"
 import http from "http"
+import { addRecentMatch, findAnyPartner, findEligiblePartner } from "./libs/matchingHelper"
 
 dotenv.config({
     path:"../../.env"
@@ -34,37 +35,59 @@ app.use(cookieParser())
 const PORT = process.env.PORT_COMM || 6000
 
 const waitingUsers:string[] = [];
+let timedMap:Map<string,Map<string,number>> = new Map();
+const cooldown = 15*60*1000;
 
 io.on("connection",(socket:Socket) => {
     console.log(`User connected ${socket.id}`);
 
-    socket.on("find_partner",() => {
+    socket.on("find_partner",({type}:{type:"normal"|"immidiate"}) => {
         console.log(`User ${socket.id} is looking for partner`);
-
-        if(waitingUsers.length === 0){
-            waitingUsers.push(socket.id);
-            socket.emit("waiting")
+        
+        //TODO: after 10 minutes from the frontend
+        let partnerId:string | null;
+        if(type === "normal"){
+            partnerId = findEligiblePartner(socket.id,waitingUsers,timedMap,cooldown);
         }else{
-            const partnerId = waitingUsers.shift(); 
-            if(partnerId){
-                const roomId = `room_${partnerId}_${socket.id}`
-                socket.join(roomId);
-                const partnerSocket = io.sockets.sockets.get(partnerId);
-                
-                if(partnerSocket){
-                    partnerSocket.join(roomId)
-                    io.to(roomId).emit("partner_found",{
-                        roomId,partnerId,yourId:socket.id
-                    })
-                    console.log(`Paired ${socket.id} with ${partnerId} in room ${roomId}`);
-                }else{
-                    waitingUsers.unshift(socket.id);
+            partnerId = findAnyPartner(waitingUsers);
+        }
+
+        if(!partnerId){
+            waitingUsers.push(socket.id);
+            socket.emit("waiting");
+            return;
+        }else{
+            const roomId = `room_${partnerId}_${socket.id}`
+            socket.join(roomId);
+            const partnerSocket = io.sockets.sockets.get(partnerId);
+            
+            if(partnerSocket){
+                partnerSocket.join(roomId)
+                io.to(roomId).emit("partner_found",{
+                    roomId,partnerId,yourId:socket.id
+                })
+                console.log(`Paired ${socket.id} with ${partnerId} in room ${roomId}`);
+            }else{
+                waitingUsers.unshift(socket.id);
+            }
+        }
+        // handle persisting maybe the user on refresh
+    })
+
+    socket.on("add_recent_match",({partnerId}:{partnerId:string})=>{
+        addRecentMatch(socket.id,partnerId,timedMap);
+
+        const rooms = io.sockets.adapter.sids.get(socket.id);
+        if(rooms){
+            for(const roomId in rooms){
+                // we are always in one room
+                if(roomId !== socket.id){
+                    socket.leave(roomId);
+                    socket.to(roomId)
                 }
             }
         }
-
     })
-
 
     socket.on("offer",({roomId,offer}) => {
         socket.to(roomId).emit("offer",{offer,from:socket.id})
@@ -87,10 +110,11 @@ io.on("connection",(socket:Socket) => {
         const rooms = io.sockets.adapter.sids.get(socket.id);
         if(rooms){
             rooms.forEach((roomId)=>{
-                socket.to(roomId).emit("partner_disconnected")
+                if(socket.id !== roomId){
+                    socket.to(roomId).emit("partner_disconnected")
+                }
             })
         }
-
     })
 
 })
