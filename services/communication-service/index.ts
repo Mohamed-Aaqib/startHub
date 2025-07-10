@@ -34,6 +34,10 @@ app.use(cookieParser())
 
 const PORT = process.env.PORT_COMM || 6000
 
+const userRoomMap:Map<string,string> = new Map<string,string>();
+const socketUserMap:Map<string,string> = new Map<string,string>()
+const userSocketMap:Map<string,string> = new Map<string,string>()
+
 const waitingUsers:string[] = [];
 let timedMap:Map<string,Map<string,number>> = new Map();
 const cooldown = 15*60*1000;
@@ -41,7 +45,28 @@ const cooldown = 15*60*1000;
 io.on("connection",(socket:Socket) => {
     console.log(`User connected ${socket.id}`);
 
-    socket.on("find_partner",({type}:{type:"normal"|"immidiate"}) => {
+    socket.on("register_user",({userId}) => {
+        
+        socketUserMap.set(socket.id,userId)
+        userSocketMap.set(userId,socket.id)
+        const previousRoom = userRoomMap.get(userId);
+        
+        if(previousRoom){
+            const previousRoomSocket = io.sockets.adapter.rooms.get(previousRoom)
+            if(previousRoomSocket){
+                socket.join(previousRoom);
+                socket.to(previousRoom).emit("partner_reconnected",{
+                    userId,
+                    socketId:socket.id
+                })
+            }
+        }
+    })
+
+    socket.on("find_partner",({type}:{type:"normal"|"immediate"}) => {
+        const userId = socketUserMap.get(socket.id);
+        if(!userId) return;
+
         console.log(`User ${socket.id} is looking for partner`);
         
         //TODO: after 10 minutes from the frontend
@@ -58,20 +83,23 @@ io.on("connection",(socket:Socket) => {
             return;
         }else{
             const roomId = `room_${partnerId}_${socket.id}`
-            socket.join(roomId);
             const partnerSocket = io.sockets.sockets.get(partnerId);
-            
             if(partnerSocket){
                 partnerSocket.join(roomId)
+                socket.join(roomId)
+
+                userRoomMap.set(partnerId,roomId)
+                userRoomMap.set(userId,roomId)
+
                 io.to(roomId).emit("partner_found",{
                     roomId,partnerId,yourId:socket.id
                 })
+                
                 console.log(`Paired ${socket.id} with ${partnerId} in room ${roomId}`);
             }else{
                 waitingUsers.unshift(socket.id);
             }
         }
-        // handle persisting maybe the user on refresh
     })
 
     socket.on("add_recent_match",({partnerId}:{partnerId:string})=>{
@@ -79,11 +107,37 @@ io.on("connection",(socket:Socket) => {
 
         const rooms = io.sockets.adapter.sids.get(socket.id);
         if(rooms){
-            for(const roomId in rooms){
+            for(const roomId of rooms){
                 // we are always in one room
                 if(roomId !== socket.id){
                     socket.leave(roomId);
-                    socket.to(roomId)
+                    socket.to(roomId).emit("partner_disconnected")
+
+                    const partnerSocketIds = io.sockets.adapter.rooms.get(roomId);
+                    if(partnerSocketIds){
+                        partnerSocketIds.forEach((peerIds)=>{
+                            if(peerIds !== socket.id){
+                                const partnerSocket = io.sockets.sockets.get(peerIds);
+                                if(partnerSocket) partnerSocket.leave(roomId);
+
+                                const peerUserId = socketUserMap.get(peerIds);
+                                if (peerUserId) {
+                                    userRoomMap.delete(peerUserId);
+                                    userSocketMap.delete(peerUserId);
+                                    socketUserMap.delete(peerIds);   
+                                }
+
+                            }
+                        })
+                    }
+
+                    const userId = socketUserMap.get(socket.id);
+                    if(userId){
+                        userSocketMap.delete(userId);
+                        userRoomMap.delete(userId);
+                        socketUserMap.delete(socket.id);
+                    }
+
                 }
             }
         }
@@ -102,19 +156,50 @@ io.on("connection",(socket:Socket) => {
     })
 
     socket.on("disconnect",()=>{
-        console.log(`User disconnected ${socket.id}`);
+        console.log(`User disconnected ${socket.id} - 10s grace period`);
+        const userId = socketUserMap.get(socket.id);
+        if(!userId) return;
 
-        const index = waitingUsers.indexOf(socket.id);
-        if(index !== -1) waitingUsers.splice(index,1);
+        setTimeout(()=> {            
 
-        const rooms = io.sockets.adapter.sids.get(socket.id);
-        if(rooms){
-            rooms.forEach((roomId)=>{
-                if(socket.id !== roomId){
-                    socket.to(roomId).emit("partner_disconnected")
+            const currSocket = userSocketMap.get(userId!);
+            if(!currSocket || currSocket === socket.id){
+                const index = waitingUsers.indexOf(socket.id);
+                if(index !== -1) waitingUsers.splice(index,1);
+                
+                const rooms = io.sockets.adapter.sids.get(socket.id);
+                if(rooms){
+                    rooms.forEach((roomId)=>{
+                        if(socket.id !== roomId){
+                            socket.to(roomId).emit("partner_disconnected")
+
+                            const socketsInRoom = io.sockets.adapter.rooms.get(roomId);
+                            if(socketsInRoom){
+                                socketsInRoom.forEach((peerSocketId) => {
+                                    const peerSocket = io.sockets.sockets.get(peerSocketId);
+                                    const peerUserId = socketUserMap.get(peerSocketId);
+
+                                    if(peerSocket) peerSocket.leave(roomId);
+
+                                    if(peerUserId){
+                                        userRoomMap.delete(peerUserId);
+                                        userSocketMap.delete(peerUserId);
+                                        socketUserMap.delete(peerUserId);
+                                    }
+
+                                })
+                            }
+
+                        }
+                    })
                 }
-            })
-        }
+
+                socketUserMap.delete(socket.id);
+                userSocketMap.delete(userId)
+            }
+
+        },10*10*10*10)
+
     })
 
 })
