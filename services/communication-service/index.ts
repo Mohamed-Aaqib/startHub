@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser"
 import {Server, Socket} from "socket.io"
 import http from "http"
 import { addRecentMatch, findAnyPartner, findEligiblePartner } from "./libs/matchingHelper"
+import {Redis} from "ioredis"
 
 dotenv.config({
     path:"../../.env"
@@ -32,6 +33,21 @@ app.use(express.json({
 app.use(express.urlencoded())
 app.use(cookieParser())
 
+const redisClient = () => {
+    try {
+        if(process.env.REDIS_URL){
+            console.log("redis is connected")
+            return process.env.REDIS_URL
+        }
+        throw new Error('Redis connection failed')    
+    } catch (error) {
+        console.log("couldn't connect to redis, please try again")
+        return "";
+    }
+}
+
+export const redis = new Redis(redisClient())
+
 const PORT = process.env.PORT_COMM || 6000
 
 const userRoomMap:Map<string,string> = new Map<string,string>();
@@ -42,23 +58,34 @@ const waitingUsers:string[] = [];
 let timedMap:Map<string,Map<string,number>> = new Map();
 const cooldown = 15*60*1000;
 
+function notifyFriends(userId:string,status:"green"|"offline",friends:string[]){
+    friends.forEach((friendId) => {
+        const friendSocketId = userSocketMap.get(friendId);
+        if(friendSocketId){
+            io.to(friendSocketId).emit("user_status",{userId,status})
+        }
+    })
+}
+
 io.on("connection",(socket:Socket) => {
     console.log(`User connected ${socket.id}`);
 
-    socket.on("register_user",({userId}) => {
+    socket.on("register_user",({userId,isChat}) => {
         
         socketUserMap.set(socket.id,userId)
         userSocketMap.set(userId,socket.id)
-        const previousRoom = userRoomMap.get(userId);
-        
-        if(previousRoom){
-            const previousRoomSocket = io.sockets.adapter.rooms.get(previousRoom)
-            if(previousRoomSocket){
-                socket.join(previousRoom);
-                socket.to(previousRoom).emit("partner_reconnected",{
-                    userId,
-                    socketId:socket.id
-                })
+        if(!isChat){
+            const previousRoom = userRoomMap.get(userId);
+            
+            if(previousRoom){
+                const previousRoomSocket = io.sockets.adapter.rooms.get(previousRoom)
+                if(previousRoomSocket){
+                    socket.join(previousRoom);
+                    socket.to(previousRoom).emit("partner_reconnected",{
+                        userId,
+                        socketId:socket.id
+                    })
+                }
             }
         }
     })
@@ -155,15 +182,70 @@ io.on("connection",(socket:Socket) => {
         socket.to(roomId).emit("ice-candidates",{candidate,from:socket.id})
     })
 
+    socket.on("user_status",async ({userId,chatId,status,friends})=>{
+        if(status === "in_chat" && chatId){
+            await redis.set(`user:in_chat:${userId}`,"true","EX",30)
+            socket.join(chatId);
+            socket.to(chatId).emit("user_status",{userId,status:"purple"})
+        }else{
+            await redis.set(`user:online:${userId}`,"true","EX",30)
+            notifyFriends(userId,"green",friends)
+        }
+    })
+
+    socket.on("get_online_friends",async ({userId,friends}) => {
+        const onlineStatuses = [];
+        for(const friendId of friends){
+            // more efficient way of us
+            const isOnline = await redis.get(`user:online:${friendId}`);
+            if(isOnline) onlineStatuses.push({ userId: friendId, status: "green" });
+        }
+        socket.emit("online_friends_list",onlineStatuses)
+    })
+
+    socket.on("heartbeat",async ({userId})=>{
+        if(!userId) return;
+        await redis.set(`user:online:${userId}`,"true","EX",30)
+    })
+
+    socket.on("typing",({chatId}) => {
+        const userId = socketUserMap.get(socket.id);
+        socket.to(chatId).emit("user_typing",{
+            chatId,
+            userId
+        })
+    })
+
+    socket.on("join_chat",({chatId}) => {
+        if(!chatId) return;
+        socket.join(chatId);
+        console.log(`Socket ${socket.id} joined chat ${chatId}`);
+    })
+
+    socket.on("send_message",({chatId,message,userId})=>{
+        if(!userId || !chatId) return;
+        io.to(chatId).emit("new_message",{
+            chatId,
+            message,
+            senderId:userId,
+            timestamp:Date.now()
+        })
+    })
+
+
     socket.on("disconnect",()=>{
         console.log(`User disconnected ${socket.id} - 10s grace period`);
         const userId = socketUserMap.get(socket.id);
         if(!userId) return;
 
-        setTimeout(()=> {            
+        setTimeout(async ()=> {            
 
             const currSocket = userSocketMap.get(userId!);
+            
             if(!currSocket || currSocket === socket.id){
+
+                await redis.del(`user:online:${userId}`)
+
                 const index = waitingUsers.indexOf(socket.id);
                 if(index !== -1) waitingUsers.splice(index,1);
                 
