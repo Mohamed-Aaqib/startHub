@@ -21,6 +21,8 @@ const io = new Server(server,{
     }
 })
 
+// TODO: rate limiting
+
 app.use(cors({
     origin:process.env.ORIGIN,
     methods:["GET","POST"],
@@ -36,7 +38,6 @@ app.use(cookieParser())
 const redisClient = () => {
     try {
         if(process.env.REDIS_URL){
-            console.log("redis is connected")
             return process.env.REDIS_URL
         }
         throw new Error('Redis connection failed')    
@@ -46,7 +47,20 @@ const redisClient = () => {
     }
 }
 
-export const redis = new Redis(redisClient())
+export const redis = new Redis(redisClient(),{
+    retryStrategy(times){
+        const delay = Math.min(times * 50,5000)
+    }
+})
+
+redis.on("connect", () => {
+    console.log("Redis connected ✅");
+});
+redis.on("error", (err) => {
+    console.error("Redis connection error ❌:", err.message);
+});
+
+
 
 const PORT = process.env.PORT_COMM || 6000
 
