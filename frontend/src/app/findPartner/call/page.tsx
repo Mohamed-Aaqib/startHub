@@ -103,11 +103,29 @@ const page = () => {
             socket.off("ice-candidates");
             pc.current?.close();
             pc.current = null;
-            //remoteRef.current.srcObject as well should probably go
+            if(remoteVideoRef.current){
+                remoteVideoRef.current.srcObject = null;
+            }
         }
 
     },[roomId,partnerId,currId])
 
+    const toggleVideo = () => {
+        const videoTrack = localStream.current?.getVideoTracks()[0];
+        if(videoTrack) videoTrack.enabled = !videoTrack.enabled;
+    }
+
+    const toggleAudio = () => {
+        const audioTrack = localStream.current?.getAudioTracks()[0];
+        if(audioTrack) audioTrack.enabled = !audioTrack.enabled;
+    }
+
+    const handleSkip = () => {
+        setPartnerId(null);
+        setRoomId(null);
+        setIsWaiting(true);
+        socket.emit("find_partner",{type:"normal"});
+    }
 
     return (
         <div className='h-screen w-screen'>
@@ -124,9 +142,9 @@ const page = () => {
                         <div className="w-full h-full flex items-center justify-center text-black text-2xl">Finding partner...</div>
                     )}
                     <div className='w-full h-full flex flex-col items-center justify-center gap-y-4'>
-                        <button className='bg-green-600 text-black p-3 rounded-md cursor-pointer border-2'>Toggle Video</button>
-                        <button className='bg-green-600 text-black p-3 rounded-md cursor-pointer border-2'>Toggle Audio</button>
-                        <button className='bg-black text-green-600 p-3 rounded-md cursor-pointer border-2 mb-2'>Toggle Skip</button>
+                        <button onClick={toggleVideo} className='bg-green-600 text-black p-3 rounded-md cursor-pointer border-2'>Toggle Video</button>
+                        <button onClick={toggleAudio} className='bg-green-600 text-black p-3 rounded-md cursor-pointer border-2'>Toggle Audio</button>
+                        <button onClick={handleSkip} className='bg-black text-green-600 p-3 rounded-md cursor-pointer border-2 mb-2'>Toggle Skip</button>
                     </div>
                 </div>
             </div>
