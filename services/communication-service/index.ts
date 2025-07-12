@@ -189,6 +189,7 @@ io.on("connection",(socket:Socket) => {
     })
 
     socket.on("answer",({roomId,answer})=> {
+        //TODO: not socket id but userId
         socket.to(roomId).emit("answer",{answer,from:socket.id})
     })
 
