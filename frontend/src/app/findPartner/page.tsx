@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 const page = () => {
     const router = useRouter();
-    const userId = useMemo(() => crypto.randomUUID() ,[])
+    const [userId,setUserId] = useState<string|null>(null)
     const streamRef = useRef<MediaStream|null>(null)
     const localVideoRef = useRef<HTMLVideoElement>(null)
     const [isCameraOn,setIsCameraOn] = useState(true);
@@ -16,6 +16,10 @@ const page = () => {
     const [selectedVideo,setSelectedDeviceID] = useState<string|null>(null)
     const [selectedAudio,setSelectedAudioID] = useState<string|null>(null)
 
+
+    useEffect(()=>{
+        setUserId(crypto.randomUUID())
+    },[])
 
     useEffect(() => {
         const fetchedDevices = async ()=> {
@@ -45,8 +49,7 @@ const page = () => {
     },[userId])
 
     const findPartner  = () => {
-        socket.emit("find_partner",{type:"normal"});
-        router.push("/findPartner/call")
+        router.push(`/findPartner/call?testId=${userId}&autoFind=1`)
     }
 
     const setUpMic = async (stream:MediaStream) => {

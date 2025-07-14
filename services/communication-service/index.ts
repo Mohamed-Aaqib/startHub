@@ -83,7 +83,8 @@ function notifyFriends(userId:string,status:"green"|"offline",friends:string[]){
 
 io.on("connection",(socket:Socket) => {
     console.log(`User connected ${socket.id}`);
-
+    
+    // TODO: Still experimental, may need work
     socket.on("register_user",({userId,isChat}) => {
         
         socketUserMap.set(socket.id,userId)
@@ -104,27 +105,32 @@ io.on("connection",(socket:Socket) => {
         }
     })
 
+    
     socket.on("find_partner",({type}:{type:"normal"|"immediate"}) => {
         const userId = socketUserMap.get(socket.id);
         if(!userId) return;
 
         console.log(`User ${socket.id} is looking for partner`);
         
-        //TODO: after 10 minutes from the frontend
         let partnerId:string | null;
         if(type === "normal"){
-            partnerId = findEligiblePartner(socket.id,waitingUsers,timedMap,cooldown);
+            partnerId = findEligiblePartner(userId,waitingUsers,timedMap,cooldown);
         }else{
             partnerId = findAnyPartner(waitingUsers);
         }
-
+        
         if(!partnerId){
-            waitingUsers.push(socket.id);
+            if(!waitingUsers.includes(userId)){
+                waitingUsers.push(userId);
+            }
             socket.emit("waiting");
             return;
         }else{
-            const roomId = `room_${partnerId}_${socket.id}`
-            const partnerSocket = io.sockets.sockets.get(partnerId);
+            const partnerSocketId = userSocketMap.get(partnerId)
+            if(!partnerSocketId) return;
+
+            const roomId = `room_${partnerId}_${userId}`
+            const partnerSocket = io.sockets.sockets.get(partnerSocketId);
             if(partnerSocket){
                 partnerSocket.join(roomId)
                 socket.join(roomId)
@@ -132,19 +138,30 @@ io.on("connection",(socket:Socket) => {
                 userRoomMap.set(partnerId,roomId)
                 userRoomMap.set(userId,roomId)
 
-                io.to(roomId).emit("partner_found",{
-                    roomId,partnerId,yourId:socket.id
-                })
+                socket.to(roomId).emit("partner_found", {
+                    roomId,
+                    partnerId: userId,  
+                    yourId: partnerId       
+                });
+
+                socket.emit("partner_found", {
+                    roomId,
+                    partnerId: partnerId,
+                    yourId: userId          
+                });
                 
                 console.log(`Paired ${socket.id} with ${partnerId} in room ${roomId}`);
             }else{
-                waitingUsers.unshift(socket.id);
+                waitingUsers.unshift(userId);
             }
         }
     })
 
     socket.on("add_recent_match",({partnerId}:{partnerId:string})=>{
-        addRecentMatch(socket.id,partnerId,timedMap);
+        const userId = socketUserMap.get(socket.id);
+        if(!userId) return;
+
+        addRecentMatch(userId,partnerId,timedMap);
 
         const rooms = io.sockets.adapter.sids.get(socket.id);
         if(rooms){
@@ -185,16 +202,18 @@ io.on("connection",(socket:Socket) => {
     })
 
     socket.on("offer",({roomId,offer}) => {
-        socket.to(roomId).emit("offer",{offer,from:socket.id})
+        const userSocketId = socketUserMap.get(socket.id);
+        socket.to(roomId).emit("offer",{offer,from:userSocketId})
     })
 
     socket.on("answer",({roomId,answer})=> {
-        //TODO: not socket id but userId
-        socket.to(roomId).emit("answer",{answer,from:socket.id})
+        const userSocketId = socketUserMap.get(socket.id);
+        socket.to(roomId).emit("answer",{answer,from:userSocketId})
     })
 
     socket.on("ice-candidates",({roomId,candidate})=> {
-        socket.to(roomId).emit("ice-candidates",{candidate,from:socket.id})
+        const userSocketId = socketUserMap.get(socket.id);
+        socket.to(roomId).emit("ice-candidates",{candidate,from:userSocketId})
     })
 
     socket.on("user_status",async ({userId,chatId,status,friends})=>{
@@ -259,7 +278,11 @@ io.on("connection",(socket:Socket) => {
             
             if(!currSocket || currSocket === socket.id){
 
-                await redis.del(`user:online:${userId}`)
+                try {
+                    await redis.del(`user:online:${userId}`)
+                } catch (error) {
+                    console.error("Failed to delete key from Redis");
+                }
 
                 const index = waitingUsers.indexOf(socket.id);
                 if(index !== -1) waitingUsers.splice(index,1);
