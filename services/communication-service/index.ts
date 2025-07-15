@@ -84,7 +84,6 @@ function notifyFriends(userId:string,status:"green"|"offline",friends:string[]){
 io.on("connection",(socket:Socket) => {
     console.log(`User connected ${socket.id}`);
     
-    // TODO: Still experimental, may need work
     socket.on("register_user",({userId,isChat}) => {
         
         socketUserMap.set(socket.id,userId)
