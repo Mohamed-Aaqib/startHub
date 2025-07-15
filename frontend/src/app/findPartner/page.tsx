@@ -16,6 +16,38 @@ const page = () => {
     const [selectedVideo,setSelectedDeviceID] = useState<string|null>(null)
     const [selectedAudio,setSelectedAudioID] = useState<string|null>(null)
 
+    // --- Added refs for audio context and animation frame ---
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const animationFrameRef = useRef<number | null>(null);
+
+    const endCamera = () => {
+        // Instant track disable for immediate camera light turn-off
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => {
+                track.enabled = false;
+            });
+        }
+        // Stop animation frame
+        if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+            animationFrameRef.current = null;
+        }
+        // Close AudioContext
+        if (audioContextRef.current) {
+            audioContextRef.current.close();
+            audioContextRef.current = null;
+        }
+        // Then stop tracks
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+        }
+        if (localVideoRef.current) {
+            localVideoRef.current.srcObject = null;
+        }
+    }
+
+
 
     useEffect(()=>{
         setUserId(crypto.randomUUID())
@@ -42,42 +74,71 @@ const page = () => {
         socket.emit("register_user",{userId:userId,isChat:false});
 
         navigator.mediaDevices.getUserMedia({video:true,audio:true}).then((stream)=>{
+            streamRef.current = stream; 
             if(localVideoRef.current){
                 localVideoRef.current.srcObject = stream;
             }
+            setUpMic(stream)
         })
+
+        const handleBeforeUnload = () => endCamera();
+        window.addEventListener("beforeunload",handleBeforeUnload);
+
+
+        return () => {
+            endCamera();
+            window.removeEventListener("beforeunload",handleBeforeUnload)
+        }
+
     },[userId])
+
+    useEffect(() => {
+        const handlePopState = () => endCamera();
+        
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+            endCamera();
+        };
+    }, []);
+    
 
     const findPartner  = () => {
         router.push(`/findPartner/call?testId=${userId}&autoFind=1`)
     }
 
-    const setUpMic = async (stream:MediaStream) => {
+    const setUpMic = async (stream: MediaStream) => {
+        // Clean up existing resources first
+        if (audioContextRef.current) {
+            audioContextRef.current.close();
+        }
+        if (animationFrameRef.current) {
+            cancelAnimationFrame(animationFrameRef.current);
+        }
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioContextRef.current = audioContext; // Store reference
         const source = audioContext.createMediaStreamSource(stream);
         const analyser = audioContext.createAnalyser();
-
         source.connect(analyser);
         analyser.fftSize = 256;
         const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
         const canvas = document.getElementById("mic-visualizer") as HTMLCanvasElement;
         const ctx = canvas.getContext("2d");
-
         const draw = () => {
-            requestAnimationFrame(draw);
+            if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
+                return;
+            }
+            animationFrameRef.current = requestAnimationFrame(draw);
             analyser.getByteFrequencyData(dataArray);
             const volume = dataArray.reduce((a, b) => a + b,0) / dataArray.length;
-
             if(ctx && canvas){
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "limegreen";
                 ctx.fillRect(0, 0, volume * 2, canvas.height); // volume bar
             }
-
         }
-        draw()
-
+        draw();
     }
 
     const startCamera = async () => {
@@ -91,7 +152,7 @@ const page = () => {
     }
 
     const stopCamera = () => {
-        streamRef.current?.getTracks().forEach(track => track.stop());
+        streamRef.current?.getVideoTracks().forEach(track => track.stop());
         if(localVideoRef.current){
             localVideoRef.current.srcObject = null;
         }
@@ -110,6 +171,10 @@ const page = () => {
 
         if(!selectedVideo) return;
 
+        if(streamRef.current){
+            streamRef.current.getTracks().forEach(track => track.stop())
+        }
+
         const stream = await navigator.mediaDevices.getUserMedia({
             video:{deviceId:{exact:selectedVideo}},
             audio:true,
@@ -120,6 +185,7 @@ const page = () => {
             localVideoRef.current.srcObject = stream;
         }
 
+        setUpMic(stream)
         setIsCameraOn(true);
     }
 
@@ -148,7 +214,7 @@ const page = () => {
             </h1>
             <div className='mx-auto mt-10 max-w-[450px] md:max-w-3xl w-full p-1 space-y-2 bg-green-700 min-h-[400px]'>
                 
-                <video ref={localVideoRef} muted autoPlay playsInline className={`${!isCameraOn && "hidden" } max-w-[300px] h-full block mx-auto rounded-2xl`}/>
+                <video ref={localVideoRef} autoPlay playsInline className={`${!isCameraOn && "hidden" } max-w-[300px] h-full block mx-auto rounded-2xl`}/>
                 {!isCameraOn && (
                     <div className='max-w-[300px] w-full mx-auto h-[350px] flex items-center justify-center bg-black text-white rounded-2xl'>
                     Camera is off / Loading...

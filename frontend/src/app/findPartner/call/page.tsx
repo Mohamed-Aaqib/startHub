@@ -69,6 +69,7 @@ const page = () => {
             setIsWaiting(false)
         })
 
+
         return () => {
             socket.off("waiting")
             socket.off("partner_found")
