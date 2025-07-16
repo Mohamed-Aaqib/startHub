@@ -199,6 +199,28 @@ const page = () => {
             }
         });
 
+        socket.on("partner_disconnected", () => {
+            // Clean up peer connection and refs
+            if (pc.current) {
+                pc.current.close();
+                pc.current = null;
+            }
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = null;
+            }
+            remoteDescriptionSet.current = false;
+            pendingCandidates.current = [];
+            setPartnerId(null);
+            setRoomId(null);
+            setIsWaiting(true);
+            setRemoteVideoEnabled(true);
+            setRemoteAudioEnabled(true);
+            setErrorMsg(null);
+            setLoading(false);
+            // Start finding a new partner
+            socket.emit("find_partner", { type: "normal" });
+        });
+
         if (currId && partnerId && currId > partnerId) {
             console.log("offer is created here")
             pc.current.createOffer().then((offer) => {
@@ -215,6 +237,7 @@ const page = () => {
             socket.off("ice-candidates");
             socket.off("video_state_change");
             socket.off("audio_state_change");
+            socket.off("partner_disconnected");
             pc.current?.close();
             pc.current = null;
             if(remoteVideoRef.current){

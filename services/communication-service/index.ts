@@ -163,6 +163,9 @@ io.on("connection",(socket:Socket) => {
         addRecentMatch(userId,partnerId,timedMap);
 
         const rooms = io.sockets.adapter.sids.get(socket.id);
+        console.log(timedMap);
+        console.log(rooms);
+
         if(rooms){
             for(const roomId of rooms){
                 // we are always in one room
