@@ -65,6 +65,7 @@ const page = () => {
             setIsWaiting(true);
         });
         socket.on("partner_found", ({ roomId, partnerId, yourId }) => {
+            console.log("partner found ?")
             if (timeoutMatch.current) {
                 clearTimeout(timeoutMatch.current);
                 timeoutMatch.current = null;

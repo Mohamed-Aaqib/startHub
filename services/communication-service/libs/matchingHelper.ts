@@ -14,9 +14,11 @@ export function addRecentMatch(userA:string,userB:string,timedMap:Map<string,Map
 }
 
 export function findEligiblePartner(currentId:string,waitingUsers:string[],timedMap:Map<string,Map<string,number>>,cooldown:number):string|null{
+    console.log("waiting list is : ",waitingUsers,"\n");
     while(waitingUsers.length > 0){
         const potential = waitingUsers.shift();
         if(potential){
+            console.log("\n potential is : ",potential,"\n");
             if(!hasRecentlyMatched(currentId,potential,cooldown,timedMap)){
                 return potential;
             }else{

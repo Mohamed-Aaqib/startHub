@@ -106,7 +106,10 @@ io.on("connection",(socket:Socket) => {
 
     
     socket.on("find_partner",({type}:{type:"normal"|"immediate"}) => {
+
+        console.log(`User ${socket.id} is looking for partner`);
         const userId = socketUserMap.get(socket.id);
+        console.log(`User ${userId} is looking for partner`);
         if(!userId) return;
 
         console.log(`User ${socket.id} is looking for partner`);
@@ -114,10 +117,11 @@ io.on("connection",(socket:Socket) => {
         let partnerId:string | null;
         if(type === "normal"){
             partnerId = findEligiblePartner(userId,waitingUsers,timedMap,cooldown);
+            console.log("partner id is : ", partnerId)
         }else{
             partnerId = findAnyPartner(waitingUsers);
         }
-        
+        console.log("\n","partnerID list updated",partnerId ,"\n")
         if(!partnerId){
             if(!waitingUsers.includes(userId)){
                 waitingUsers.push(userId);
@@ -163,8 +167,8 @@ io.on("connection",(socket:Socket) => {
         addRecentMatch(userId,partnerId,timedMap);
 
         const rooms = io.sockets.adapter.sids.get(socket.id);
-        console.log(timedMap);
-        console.log(rooms);
+        // console.log(timedMap);
+        // console.log(rooms);
 
         if(rooms){
             for(const roomId of rooms){
@@ -180,13 +184,13 @@ io.on("connection",(socket:Socket) => {
                                 const partnerSocket = io.sockets.sockets.get(peerIds);
                                 if(partnerSocket) partnerSocket.leave(roomId);
 
-                                const peerUserId = socketUserMap.get(peerIds);
-                                if (peerUserId) {
-                                    userRoomMap.delete(peerUserId);
-                                    userSocketMap.delete(peerUserId);
-                                    socketUserMap.delete(peerIds);   
-                                }
-
+                                // Only delete mappings for the disconnecting user, not the remaining peer
+                                // const peerUserId = socketUserMap.get(peerIds);
+                                // if (peerUserId) {
+                                //     userRoomMap.delete(peerUserId);
+                                //     userSocketMap.delete(peerUserId);
+                                //     socketUserMap.delete(peerIds);   // <-- REMOVE THIS LINE
+                                // }
                             }
                         })
                     }
@@ -311,11 +315,12 @@ io.on("connection",(socket:Socket) => {
 
                                     if(peerSocket) peerSocket.leave(roomId);
 
-                                    if(peerUserId){
-                                        userRoomMap.delete(peerUserId);
-                                        userSocketMap.delete(peerUserId);
-                                        socketUserMap.delete(peerUserId);
-                                    }
+                                    // Only delete mappings for the disconnecting user, not the remaining peer
+                                    // if(peerUserId){
+                                    //     userRoomMap.delete(peerUserId);
+                                    //     userSocketMap.delete(peerUserId);
+                                    //     socketUserMap.delete(peerSocketId); // <-- REMOVE THIS LINE
+                                    // }
 
                                 })
                             }
