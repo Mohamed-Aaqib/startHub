@@ -1,7 +1,7 @@
 "use client"
 import socket from '@/components/sockets/socket';
 import { useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 
 const ICE_SERVERS = [
     { urls: "stun:stun.l.google.com:19302" },
@@ -34,6 +34,8 @@ const page = () => {
 
     const pendingCandidates = useRef<any[]>([]);
     const remoteDescriptionSet = useRef<boolean>(false);
+    const pendingOffer = useRef<any>(null);
+    const pendingAnswer = useRef<any>(null);
 
     const [videoEnabled, setVideoEnabled] = useState(true);
     const [audioEnabled, setAudioEnabled] = useState(true);
@@ -59,115 +61,36 @@ const page = () => {
             setMediaReady(true);
         })
 
-        socket.on("waiting",() => {
+        socket.on("waiting", () => {
             setIsWaiting(true);
-        })
-
-        socket.on("partner_found",({roomId,partnerId,yourId})=>{
-            console.log("we found your partner ")
-            if(timeoutMatch.current){
+        });
+        socket.on("partner_found", ({ roomId, partnerId, yourId }) => {
+            if (timeoutMatch.current) {
                 clearTimeout(timeoutMatch.current);
                 timeoutMatch.current = null;
             }
-
-
-            setRoomId(roomId)
-            setPartnerId(partnerId)
-            setIsWaiting(false)
-        })
-
-
-
-        return () => {
-            socket.off("waiting")
-            socket.off("partner_found")
-        }
-
-    },[])
-
-    useEffect(()=>{
-        if(!roomId || !partnerId || !mediaReady || !currId) return;
-        pc.current = new RTCPeerConnection({iceServers:ICE_SERVERS});
-        if (localStream.current) {
-            localStream.current.getTracks().forEach((track)=>{
-                pc.current?.addTrack(track,localStream.current!);
-            });
-        }
-        
-        pc.current.ontrack = (event) => {
-            console.log(event.streams[0])
-            if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = event.streams[0];
-                const videoTracks = event.streams[0].getVideoTracks();
-                const audioTracks = event.streams[0].getAudioTracks();
-                if (videoTracks.length > 0) {
-                    console.log("[TRACKS TO CHECK] Remote video track label:", videoTracks[0].label, "enabled:", videoTracks[0].enabled, "muted:", videoTracks[0].muted);
-                } else {
-                    console.log("[TRACKS TO CHECK] No remote video tracks found!");
-                }
-                if (audioTracks.length > 0) {
-                    console.log("[TRACKS TO CHECK] Remote audio track label:", audioTracks[0].label, "enabled:", audioTracks[0].enabled, "muted:", audioTracks[0].muted);
-                } else {
-                    console.log("[TRACKS TO CHECK] No remote audio tracks found!");
-                }
-                remoteVideoRef.current.play().then(() => console.log("[Video] remote video playing")).catch(e => console.warn("[Video] play() error", e));
-            } else {
-                console.log("[TRACKS TO CHECK] remoteVideoRef.current is null!");
-            }
-        }
-
-        pc.current.onicecandidate = (event) => {
-            if(event.candidate){
-                socket.emit("ice-candidates", { roomId, candidate: event.candidate });
-            }
-        }
-
-        socket.on("offer", async ({ offer, from }) => {
-            console.log("offer is recieved here", offer);
+            setRoomId(roomId);
+            setPartnerId(partnerId);
+            setIsWaiting(false);
+        });
+        socket.on("offer", ({ offer, from }) => {
             if (from !== currId) {
-                try {
-                    await pc.current?.setRemoteDescription(new RTCSessionDescription(offer));
-                    remoteDescriptionSet.current = true;
-                    pendingCandidates.current.forEach(async candidate => {
-                        try {
-                            // we dont need to await;
-                            await pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
-                        } catch (err) {
-                            console.error("[WebRTC] Error handling ICE candidate (drain)", err);
-                        }
-                    });
-                    pendingCandidates.current = [];
-                    const answer = await pc.current?.createAnswer();
-                    await pc.current?.setLocalDescription(answer);
-                    console.log("answer is created here");
-                    socket.emit("answer", { roomId, answer });
-                } catch (err) {
-                    console.error("[WebRTC] Error handling offer", err);
+                if (!pc.current) {
+                    pendingOffer.current = offer;
+                } else {
+                    handleOffer(offer);
                 }
             }
         });
-
-        console.log("socket is created here",socket)
-        socket.on("answer", async ({ answer, from }) => {
-            console.log("answer is recieved here");
+        socket.on("answer", ({ answer, from }) => {
             if (from !== currId) {
-                try {
-                    await pc.current?.setRemoteDescription(new RTCSessionDescription(answer));
-                    remoteDescriptionSet.current = true;
-                    pendingCandidates.current.forEach(async candidate => {
-                        try {
-                            await pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
-                        } catch (err) {
-                            console.error("[WebRTC] Error handling ICE candidate (drain)", err);
-                        }
-                    });
-                    pendingCandidates.current = [];
-                } catch (err) {
-                    console.error("[WebRTC] Error handling answer", err);
+                if (!pc.current) {
+                    pendingAnswer.current = answer;
+                } else {
+                    handleAnswer(answer);
                 }
             }
         });
-
         socket.on("ice-candidates", async ({ candidate, from }) => {
             if (from !== currId && candidate) {
                 if (remoteDescriptionSet.current) {
@@ -183,7 +106,6 @@ const page = () => {
                 console.log("[Socket] Ignored ICE candidate from self", { from, currId });
             }
         });
-
         socket.on("video_state_change", ({ enabled, from }) => {
             if (from !== currId) setRemoteVideoEnabled(enabled);
         });
@@ -198,9 +120,7 @@ const page = () => {
                 }
             }
         });
-
         socket.on("partner_disconnected", () => {
-            // Clean up peer connection and refs
             if (pc.current) {
                 pc.current.close();
                 pc.current = null;
@@ -210,6 +130,8 @@ const page = () => {
             }
             remoteDescriptionSet.current = false;
             pendingCandidates.current = [];
+            pendingOffer.current = null;
+            pendingAnswer.current = null;
             setPartnerId(null);
             setRoomId(null);
             setIsWaiting(true);
@@ -217,35 +139,108 @@ const page = () => {
             setRemoteAudioEnabled(true);
             setErrorMsg(null);
             setLoading(false);
-            // Start finding a new partner
             socket.emit("find_partner", { type: "normal" });
         });
 
-        if (currId && partnerId && currId > partnerId) {
-            console.log("offer is created here")
-            pc.current.createOffer().then((offer) => {
-                pc.current?.setLocalDescription(offer).then(() => {
-                    socket.emit("offer", { roomId, offer });
-                });
-            }).catch((err) => console.error("[WebRTC] Offer creation error", err));
-        }
-
         return () => {
-            if(partnerId) socket.emit("add_recent_match",{partnerId});
+            socket.off("waiting");
+            socket.off("partner_found");
             socket.off("offer");
             socket.off("answer");
             socket.off("ice-candidates");
             socket.off("video_state_change");
             socket.off("audio_state_change");
             socket.off("partner_disconnected");
-            pc.current?.close();
-            pc.current = null;
-            if(remoteVideoRef.current){
-                remoteVideoRef.current.srcObject = null;
-            }
         }
 
-    },[roomId,partnerId,currId,mediaReady])
+    },[])
+
+    const handleOffer = async (offer: any) => {
+        try {
+            await pc.current?.setRemoteDescription(new RTCSessionDescription(offer));
+            remoteDescriptionSet.current = true;
+            pendingCandidates.current.forEach(async candidate => {
+                try {
+                    await pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (err) {
+                    console.error("[WebRTC] Error handling ICE candidate (drain)", err);
+                }
+            });
+            pendingCandidates.current = [];
+            const answer = await pc.current?.createAnswer();
+            await pc.current?.setLocalDescription(answer);
+            console.log("answer is created here");
+            socket.emit("answer", { roomId, answer });
+        } catch (err) {
+            console.error("[WebRTC] Error handling offer", err);
+        }
+    };
+
+    const handleAnswer = async (answer: any) => {
+        try {
+            await pc.current?.setRemoteDescription(new RTCSessionDescription(answer));
+            remoteDescriptionSet.current = true;
+            pendingCandidates.current.forEach(async candidate => {
+                try {
+                    await pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (err) {
+                    console.error("[WebRTC] Error handling ICE candidate (drain)", err);
+                }
+            });
+            pendingCandidates.current = [];
+        } catch (err) {
+            console.error("[WebRTC] Error handling answer", err);
+        }
+    };
+
+    useEffect(() => {
+        if (!roomId || !partnerId || !mediaReady || !currId) return;
+        pc.current = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+        if (localStream.current) {
+            localStream.current.getTracks().forEach((track) => {
+                pc.current?.addTrack(track, localStream.current!);
+            });
+        }
+        pc.current.ontrack = (event) => {
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = event.streams[0];
+                remoteVideoRef.current.play().catch(e => console.warn("[Video] play() error", e));
+            }
+        };
+        pc.current.onicecandidate = (event) => {
+            if (event.candidate) {
+                socket.emit("ice-candidates", { roomId, candidate: event.candidate });
+            }
+        };
+
+        if (pendingOffer.current) {
+            handleOffer(pendingOffer.current);
+            pendingOffer.current = null;
+        }
+        if (pendingAnswer.current) {
+            handleAnswer(pendingAnswer.current);
+            pendingAnswer.current = null;
+        }
+        
+        if (currId && partnerId && currId > partnerId) {
+            pc.current.createOffer().then((offer) => {
+                pc.current?.setLocalDescription(offer).then(() => {
+                    console.log("offer is emitted here");
+                    socket.emit("offer", { roomId, offer });
+                });
+            }).catch((err) => console.error("[WebRTC] Offer creation error", err));
+        }
+        return () => {
+            if (partnerId) socket.emit("add_recent_match", { partnerId });
+            pc.current?.close();
+            pc.current = null;
+            if (remoteVideoRef.current) {
+                remoteVideoRef.current.srcObject = null;
+            }
+            pendingOffer.current = null;
+            pendingAnswer.current = null;
+        };
+    }, [roomId, partnerId, currId, mediaReady]);
 
     useEffect(() => {
         if (searchParams.get("autoFind") === "1" && !emittedRef.current) {
@@ -300,6 +295,26 @@ const page = () => {
             socket.emit("find_partner",{type:"immediate"});
         },2*60*1000)
     }
+
+    const handleBeforeUnload = useCallback(() => {
+        if (partnerId) {
+            socket.emit("add_recent_match", { partnerId });
+        }
+        if (pc.current) {
+            pc.current.close();
+            pc.current = null;
+        }
+        if (remoteVideoRef.current) {
+            remoteVideoRef.current.srcObject = null;
+        }
+    }, [partnerId]);
+
+    useEffect(() => {
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, [handleBeforeUnload]);
 
     return (
         <div className='h-screen w-screen flex flex-col items-center justify-center bg-green-50'>
