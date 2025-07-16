@@ -123,18 +123,23 @@ const page = () => {
         }
 
         socket.on("offer", async ({ offer, from }) => {
-            console.log("offer is recieved here",offer)
+            console.log("offer is recieved here", offer);
             if (from !== currId) {
                 try {
                     await pc.current?.setRemoteDescription(new RTCSessionDescription(offer));
                     remoteDescriptionSet.current = true;
-                    pendingCandidates.current.forEach(candidate => {
-                        pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                    pendingCandidates.current.forEach(async candidate => {
+                        try {
+                            // we dont need to await;
+                            await pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                        } catch (err) {
+                            console.error("[WebRTC] Error handling ICE candidate (drain)", err);
+                        }
                     });
                     pendingCandidates.current = [];
                     const answer = await pc.current?.createAnswer();
                     await pc.current?.setLocalDescription(answer);
-                    console.log("answer is created here")
+                    console.log("answer is created here");
                     socket.emit("answer", { roomId, answer });
                 } catch (err) {
                     console.error("[WebRTC] Error handling offer", err);
@@ -144,13 +149,17 @@ const page = () => {
 
         console.log("socket is created here",socket)
         socket.on("answer", async ({ answer, from }) => {
-            console.log("answer is recieved here")
+            console.log("answer is recieved here");
             if (from !== currId) {
                 try {
                     await pc.current?.setRemoteDescription(new RTCSessionDescription(answer));
                     remoteDescriptionSet.current = true;
-                    pendingCandidates.current.forEach(candidate => {
-                        pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                    pendingCandidates.current.forEach(async candidate => {
+                        try {
+                            await pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                        } catch (err) {
+                            console.error("[WebRTC] Error handling ICE candidate (drain)", err);
+                        }
                     });
                     pendingCandidates.current = [];
                 } catch (err) {
@@ -163,7 +172,7 @@ const page = () => {
             if (from !== currId && candidate) {
                 if (remoteDescriptionSet.current) {
                     try {
-                        pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                        await pc.current?.addIceCandidate(new RTCIceCandidate(candidate));
                     } catch (err) {
                         console.error("[WebRTC] Error handling ICE candidate", err);
                     }
@@ -179,7 +188,15 @@ const page = () => {
             if (from !== currId) setRemoteVideoEnabled(enabled);
         });
         socket.on("audio_state_change", ({ enabled, from }) => {
-            if (from !== currId) setRemoteAudioEnabled(enabled);
+            if (from !== currId) {
+                setRemoteAudioEnabled(enabled);
+                if (remoteVideoRef.current && remoteVideoRef.current.srcObject) {
+                    const remoteStream = remoteVideoRef.current.srcObject as MediaStream;
+                    remoteStream.getAudioTracks().forEach(track => {
+                        track.enabled = enabled;
+                    });
+                }
+            }
         });
 
         if (currId && partnerId && currId > partnerId) {
