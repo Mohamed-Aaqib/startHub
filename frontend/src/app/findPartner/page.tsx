@@ -21,24 +21,17 @@ const page = () => {
     const animationFrameRef = useRef<number | null>(null);
 
     const endCamera = () => {
-        // Instant track disable for immediate camera light turn-off
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => {
-                track.enabled = false;
-            });
-        }
-        // Stop animation frame
+
         if (animationFrameRef.current) {
             cancelAnimationFrame(animationFrameRef.current);
             animationFrameRef.current = null;
         }
-        // Close AudioContext
         if (audioContextRef.current) {
             audioContextRef.current.close();
             audioContextRef.current = null;
         }
-        // Then stop tracks
         if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.enabled = false);
             streamRef.current.getTracks().forEach(track => track.stop());
             streamRef.current = null;
         }
@@ -109,20 +102,24 @@ const page = () => {
     }
 
     const setUpMic = async (stream: MediaStream) => {
-        // Clean up existing resources first
+
         if (audioContextRef.current) {
             audioContextRef.current.close();
         }
         if (animationFrameRef.current) {
             cancelAnimationFrame(animationFrameRef.current);
         }
+
         const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        audioContextRef.current = audioContext; // Store reference
+        audioContextRef.current = audioContext; 
+
         const source = audioContext.createMediaStreamSource(stream);
         const analyser = audioContext.createAnalyser();
         source.connect(analyser);
+
         analyser.fftSize = 256;
         const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        
         const canvas = document.getElementById("mic-visualizer") as HTMLCanvasElement;
         const ctx = canvas.getContext("2d");
         const draw = () => {

@@ -35,6 +35,13 @@ const page = () => {
     const pendingCandidates = useRef<any[]>([]);
     const remoteDescriptionSet = useRef<boolean>(false);
 
+    const [videoEnabled, setVideoEnabled] = useState(true);
+    const [audioEnabled, setAudioEnabled] = useState(true);
+    const [remoteVideoEnabled, setRemoteVideoEnabled] = useState(true);
+    const [remoteAudioEnabled, setRemoteAudioEnabled] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
     useEffect(() => {
     setIsMounted(true);
     }, []);
@@ -46,7 +53,6 @@ const page = () => {
             localStream.current = stream;
             if(localVideoRef.current){
                 localVideoRef.current.srcObject = stream;
-                // Always mute local video to avoid echo
                 localVideoRef.current.muted = true;
                 localVideoRef.current.play().catch(e => console.warn("[Local Video] play() error", e));
             }
@@ -58,6 +64,7 @@ const page = () => {
         })
 
         socket.on("partner_found",({roomId,partnerId,yourId})=>{
+            console.log("we found your partner ")
             if(timeoutMatch.current){
                 clearTimeout(timeoutMatch.current);
                 timeoutMatch.current = null;
@@ -70,6 +77,7 @@ const page = () => {
         })
 
 
+
         return () => {
             socket.off("waiting")
             socket.off("partner_found")
@@ -80,17 +88,16 @@ const page = () => {
     useEffect(()=>{
         if(!roomId || !partnerId || !mediaReady || !currId) return;
         pc.current = new RTCPeerConnection({iceServers:ICE_SERVERS});
-
         if (localStream.current) {
             localStream.current.getTracks().forEach((track)=>{
                 pc.current?.addTrack(track,localStream.current!);
             });
         }
-
+        
         pc.current.ontrack = (event) => {
+            console.log(event.streams[0])
             if (remoteVideoRef.current) {
                 remoteVideoRef.current.srcObject = event.streams[0];
-                // Log tracks and their state
                 const videoTracks = event.streams[0].getVideoTracks();
                 const audioTracks = event.streams[0].getAudioTracks();
                 if (videoTracks.length > 0) {
@@ -116,6 +123,7 @@ const page = () => {
         }
 
         socket.on("offer", async ({ offer, from }) => {
+            console.log("offer is recieved here",offer)
             if (from !== currId) {
                 try {
                     await pc.current?.setRemoteDescription(new RTCSessionDescription(offer));
@@ -126,6 +134,7 @@ const page = () => {
                     pendingCandidates.current = [];
                     const answer = await pc.current?.createAnswer();
                     await pc.current?.setLocalDescription(answer);
+                    console.log("answer is created here")
                     socket.emit("answer", { roomId, answer });
                 } catch (err) {
                     console.error("[WebRTC] Error handling offer", err);
@@ -133,7 +142,9 @@ const page = () => {
             }
         });
 
+        console.log("socket is created here",socket)
         socket.on("answer", async ({ answer, from }) => {
+            console.log("answer is recieved here")
             if (from !== currId) {
                 try {
                     await pc.current?.setRemoteDescription(new RTCSessionDescription(answer));
@@ -164,7 +175,15 @@ const page = () => {
             }
         });
 
+        socket.on("video_state_change", ({ enabled, from }) => {
+            if (from !== currId) setRemoteVideoEnabled(enabled);
+        });
+        socket.on("audio_state_change", ({ enabled, from }) => {
+            if (from !== currId) setRemoteAudioEnabled(enabled);
+        });
+
         if (currId && partnerId && currId > partnerId) {
+            console.log("offer is created here")
             pc.current.createOffer().then((offer) => {
                 pc.current?.setLocalDescription(offer).then(() => {
                     socket.emit("offer", { roomId, offer });
@@ -177,6 +196,8 @@ const page = () => {
             socket.off("offer");
             socket.off("answer");
             socket.off("ice-candidates");
+            socket.off("video_state_change");
+            socket.off("audio_state_change");
             pc.current?.close();
             pc.current = null;
             if(remoteVideoRef.current){
@@ -188,20 +209,43 @@ const page = () => {
 
     useEffect(() => {
         if (searchParams.get("autoFind") === "1" && !emittedRef.current) {
+            console.log("we are emitting find partner")
             socket.emit("find_partner", { type: "normal" });
             emittedRef.current = true;
         }
     }, [searchParams]);
 
     const toggleVideo = () => {
-        const videoTrack = localStream.current?.getVideoTracks()[0];
-        if(videoTrack) videoTrack.enabled = !videoTrack.enabled;
-    }
+        if (!localStream.current) return;
+        setLoading(true);
+        try {
+            const videoTrack = localStream.current.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.enabled = !videoTrack.enabled;
+                setVideoEnabled(videoTrack.enabled);
+                socket.emit("video_state_change", { roomId, enabled: videoTrack.enabled, from: currId });
+            }
+        } catch (err: any) {
+            setErrorMsg('Video toggle error: ' + (err.message || err));
+        }
+        setLoading(false);
+    };
 
     const toggleAudio = () => {
-        const audioTrack = localStream.current?.getAudioTracks()[0];
-        if(audioTrack) audioTrack.enabled = !audioTrack.enabled;
-    }
+        if (!localStream.current) return;
+        setLoading(true);
+        try {
+            const audioTrack = localStream.current.getAudioTracks()[0];
+            if (audioTrack) {
+                audioTrack.enabled = !audioTrack.enabled;
+                setAudioEnabled(audioTrack.enabled);
+                socket.emit("audio_state_change", { roomId, enabled: audioTrack.enabled, from: currId });
+            }
+        } catch (err: any) {
+            setErrorMsg('Audio toggle error: ' + (err.message || err));
+        }
+        setLoading(false);
+    };
 
     const handleSkip = () => {
         setPartnerId(null);
@@ -218,28 +262,85 @@ const page = () => {
     }
 
     return (
-        <div className='h-screen w-screen'>
+        <div className='h-screen w-screen flex flex-col items-center justify-center bg-green-50'>
             <h1 className='font-extrabold md:text-4xl text-xl block text-center py-5'>Did you find your associate?</h1>
             <h2>room id : {roomId}</h2>
-            {isMounted && (                    
-                <div className="rounded-md max-w-[400px] flex p-10 md:max-w-5xl mx-auto w-full flex-col md:flex-row items-center justify-between gap-3  bg-green-800">
-                    <div className='bg-black rounded-md'>
-                        <video ref={localVideoRef} autoPlay className='w-full h-full rounded-xl bg-gray-800'/>
-                    </div>
-
-                    <div className='bg-white rounded-md'>
-                        <video ref={remoteVideoRef} autoPlay className={`w-full h-full rounded-xl bg-gray-800`}/>
-                        {isWaiting && (
-                            <div className="w-full h-full flex items-center justify-center text-black text-2xl">Finding partner...</div>
+            {errorMsg && (
+                <div className='bg-red-100 text-red-700 px-4 py-2 rounded mb-4'>{errorMsg}</div>
+            )}
+            {isMounted && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl p-6 bg-green-800 rounded-lg shadow-lg">
+                    <div className='bg-black rounded-md relative flex flex-col items-center justify-center h-64 md:h-80'>
+                        <video ref={localVideoRef} autoPlay className='w-full h-full rounded-xl bg-gray-800 object-cover'/>
+                        {!videoEnabled && (
+                            <div className="absolute inset-0 bg-black flex items-center justify-center text-white text-2xl font-bold">
+                                <span className="flex flex-col items-center"><span>📹</span>Camera Off</span>
+                            </div>
                         )}
-                        <div className='w-full h-full flex flex-col items-center justify-center gap-y-4'>
-                            <button onClick={toggleVideo} className='bg-green-600 text-black p-3 rounded-md cursor-pointer border-2'>Toggle Video</button>
-                            <button onClick={toggleAudio} className='bg-green-600 text-black p-3 rounded-md cursor-pointer border-2'>Toggle Audio</button>
-                            <button onClick={handleSkip} className='bg-black text-green-600 p-3 rounded-md cursor-pointer border-2 mb-2'>Toggle Skip</button>
-                        </div>
+                        {!audioEnabled && (
+                            <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-sm">
+                                🔇 Muted
+                            </div>
+                        )}
+                    </div>
+                    <div className='bg-white rounded-md relative flex flex-col items-center justify-center h-64 md:h-80'>
+                        {!isWaiting ? (
+                            <>
+                                <video ref={remoteVideoRef} autoPlay className='w-full h-full rounded-xl bg-gray-800 object-cover'/>
+                                {!remoteVideoEnabled && (
+                                    <div className="absolute inset-0 bg-black flex items-center justify-center text-black text-2xl font-bold">
+                                        <span className="flex flex-col items-center"><span>👤</span>Camera Off</span>
+                                    </div>
+                                )}
+                                {!remoteAudioEnabled && (
+                                    <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-sm">
+                                        🔇 Muted
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-black text-xl bg-gray-100 rounded-xl">
+                                <div className="text-center">
+                                    <div className="animate-spin text-3xl mb-2">⏳</div>
+                                    <div>Finding partner...</div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
+            <div className='flex justify-center gap-4 mt-6'>
+                <button 
+                    onClick={toggleVideo} 
+                    disabled={loading}
+                    className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                        videoEnabled 
+                            ? 'bg-gray-600 text-white hover:bg-gray-700' 
+                            : 'bg-red-600 text-white hover:bg-red-700'
+                    } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                    {videoEnabled ? '📹 Camera On' : '📹 Camera Off'}
+                    {loading && <span className="ml-2 animate-spin">⏳</span>}
+                </button>
+                <button 
+                    onClick={toggleAudio} 
+                    disabled={loading}
+                    className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                        audioEnabled 
+                            ? 'bg-gray-600 text-white hover:bg-gray-700' 
+                            : 'bg-red-600 text-white hover:bg-red-700'
+                    } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                    {audioEnabled ? '🎤 Mic On' : '🔇 Mic Off'}
+                    {loading && <span className="ml-2 animate-spin">⏳</span>}
+                </button>
+                <button 
+                    onClick={handleSkip} 
+                    className='bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all'
+                >
+                    ⏭️ Skip
+                </button>
+            </div>
         </div>
     )
 }

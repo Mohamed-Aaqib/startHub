@@ -215,6 +215,14 @@ io.on("connection",(socket:Socket) => {
         socket.to(roomId).emit("ice-candidates",{candidate,from:userSocketId})
     })
 
+    socket.on("video_state_change", ({ roomId, enabled, from }) => {
+        socket.to(roomId).emit("video_state_change", { enabled, from });
+    });
+
+    socket.on("audio_state_change", ({ roomId, enabled, from }) => {
+        socket.to(roomId).emit("audio_state_change", { enabled, from });
+    });
+
     socket.on("user_status",async ({userId,chatId,status,friends})=>{
         if(status === "in_chat" && chatId){
             await redis.set(`user:in_chat:${userId}`,"true","EX",30)
