@@ -44,9 +44,17 @@ const page = () => {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+    const hasCalledAddRecentMatch = useRef(false);
+
+    const roomIdRef = useRef<string | null>(null);
+
     useEffect(() => {
     setIsMounted(true);
     }, []);
+
+    useEffect(() => {
+        roomIdRef.current = roomId;
+    }, [roomId]);
 
 
     useEffect(()=>{
@@ -65,16 +73,17 @@ const page = () => {
             setIsWaiting(true);
         });
         socket.on("partner_found", ({ roomId, partnerId, yourId }) => {
-            console.log("partner found ?")
-            if (timeoutMatch.current) {
-                clearTimeout(timeoutMatch.current);
-                timeoutMatch.current = null;
-            }
+            console.log("partner is found here",partnerId)
+            console.log("partner is found here",roomId)
+            // Reset the flag when a new partner is found
+            hasCalledAddRecentMatch.current = false;
             setRoomId(roomId);
             setPartnerId(partnerId);
+            console.log("setting partner finsihed")
             setIsWaiting(false);
         });
         socket.on("offer", ({ offer, from }) => {
+            console.log("offer recieved from my end ",offer,from)
             if (from !== currId) {
                 if (!pc.current) {
                     pendingOffer.current = offer;
@@ -84,6 +93,7 @@ const page = () => {
             }
         });
         socket.on("answer", ({ answer, from }) => {
+            console.log("answer is recieved from here from person who send  offer hehe",answer,from);
             if (from !== currId) {
                 if (!pc.current) {
                     pendingAnswer.current = answer;
@@ -122,6 +132,8 @@ const page = () => {
             }
         });
         socket.on("partner_disconnected", () => {
+            console.log("disconnected")
+            console.log(partnerId)
             if (pc.current) {
                 pc.current.close();
                 pc.current = null;
@@ -170,8 +182,8 @@ const page = () => {
             pendingCandidates.current = [];
             const answer = await pc.current?.createAnswer();
             await pc.current?.setLocalDescription(answer);
-            console.log("answer is created here");
-            socket.emit("answer", { roomId, answer });
+            console.log("answer is sent from here from person who recieved it", roomIdRef.current, answer);
+            socket.emit("answer", { roomId: roomIdRef.current, answer });
         } catch (err) {
             console.error("[WebRTC] Error handling offer", err);
         }
@@ -226,13 +238,12 @@ const page = () => {
         if (currId && partnerId && currId > partnerId) {
             pc.current.createOffer().then((offer) => {
                 pc.current?.setLocalDescription(offer).then(() => {
-                    console.log("offer is emitted here");
+                    console.log("offer sent yo you  ",roomId,offer)
                     socket.emit("offer", { roomId, offer });
                 });
             }).catch((err) => console.error("[WebRTC] Offer creation error", err));
         }
         return () => {
-            if (partnerId) socket.emit("add_recent_match", { partnerId });
             pc.current?.close();
             pc.current = null;
             if (remoteVideoRef.current) {
@@ -284,22 +295,29 @@ const page = () => {
     };
 
     const handleSkip = () => {
+        if (!hasCalledAddRecentMatch.current && partnerId) {
+            socket.emit("add_recent_match", { partnerId });
+            hasCalledAddRecentMatch.current = true;
+        }
+        console.log("we aint skipped")
         setPartnerId(null);
         setRoomId(null);
         setIsWaiting(true);
-        socket.emit("find_partner",{type:"normal"});
-        if(timeoutMatch.current){
-            clearTimeout(timeoutMatch.current);
-            timeoutMatch.current = null;
-        }
-        timeoutMatch.current = setTimeout(() => {
-            socket.emit("find_partner",{type:"immediate"});
-        },2*60*1000)
+        console.log("emitting")
+        socket.emit("find_partner", { type: "normal" });
+        // if(timeoutMatch.current){
+        //     clearTimeout(timeoutMatch.current);
+        //     timeoutMatch.current = null;
+        // }
+        // timeoutMatch.current = setTimeout(() => {
+        //     socket.emit("find_partner",{type:"immediate"});
+        // },20*60*1000)
     }
 
     const handleBeforeUnload = useCallback(() => {
-        if (partnerId) {
+        if (partnerId && !hasCalledAddRecentMatch.current) {
             socket.emit("add_recent_match", { partnerId });
+            hasCalledAddRecentMatch.current = true;
         }
         if (pc.current) {
             pc.current.close();
@@ -309,6 +327,20 @@ const page = () => {
             remoteVideoRef.current.srcObject = null;
         }
     }, [partnerId]);
+
+    //     const handleBeforeUnload = useCallback(() => {
+    //     // Clean up everything for a hard leave (browser/tab close)
+    //     roomIdRef.current = null;
+    //     if (pc.current) {
+    //         pc.current.close();
+    //         pc.current = null;
+    //     }
+    //     if (remoteVideoRef.current) {
+    //         remoteVideoRef.current.srcObject = null;
+    //     }
+    //     setIsWaiting(true); // UserB will see waiting state
+    // }, []);
+
 
     useEffect(() => {
         window.addEventListener("beforeunload", handleBeforeUnload);
@@ -321,6 +353,7 @@ const page = () => {
         <div className='h-screen w-screen flex flex-col items-center justify-center bg-green-50'>
             <h1 className='font-extrabold md:text-4xl text-xl block text-center py-5'>Did you find your associate?</h1>
             <h2>room id : {roomId}</h2>
+            <h2>userId : {currId}</h2>
             {errorMsg && (
                 <div className='bg-red-100 text-red-700 px-4 py-2 rounded mb-4'>{errorMsg}</div>
             )}

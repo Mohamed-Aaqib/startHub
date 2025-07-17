@@ -107,9 +107,9 @@ io.on("connection",(socket:Socket) => {
     
     socket.on("find_partner",({type}:{type:"normal"|"immediate"}) => {
 
-        console.log(`User ${socket.id} is looking for partner`);
+        console.log(` \n Socket ${socket.id} is looking for partner`);
         const userId = socketUserMap.get(socket.id);
-        console.log(`User ${userId} is looking for partner`);
+        console.log(`User on the other hand ${userId} is looking for partner \n`);
         if(!userId) return;
 
         console.log(`User ${socket.id} is looking for partner`);
@@ -162,8 +162,8 @@ io.on("connection",(socket:Socket) => {
 
     socket.on("add_recent_match",({partnerId}:{partnerId:string})=>{
         const userId = socketUserMap.get(socket.id);
+        console.log("adding recent match ", userId)
         if(!userId) return;
-
         addRecentMatch(userId,partnerId,timedMap);
 
         const rooms = io.sockets.adapter.sids.get(socket.id);
@@ -184,22 +184,23 @@ io.on("connection",(socket:Socket) => {
                                 const partnerSocket = io.sockets.sockets.get(peerIds);
                                 if(partnerSocket) partnerSocket.leave(roomId);
 
-                                // Only delete mappings for the disconnecting user, not the remaining peer
-                                // const peerUserId = socketUserMap.get(peerIds);
-                                // if (peerUserId) {
-                                //     userRoomMap.delete(peerUserId);
+                                // Clean up only userRoomMap for the peer
+                                const peerUserId = socketUserMap.get(peerIds);
+                                if (peerUserId) {
+                                    userRoomMap.delete(peerUserId);
                                 //     userSocketMap.delete(peerUserId);
                                 //     socketUserMap.delete(peerIds);   // <-- REMOVE THIS LINE
-                                // }
+
+                                }
                             }
                         })
                     }
 
                     const userId = socketUserMap.get(socket.id);
                     if(userId){
-                        userSocketMap.delete(userId);
+                        // userSocketMap.delete(userId);
+                        // socketUserMap.delete(socket.id);
                         userRoomMap.delete(userId);
-                        socketUserMap.delete(socket.id);
                     }
 
                 }
@@ -284,6 +285,7 @@ io.on("connection",(socket:Socket) => {
     socket.on("disconnect",()=>{
         console.log(`User disconnected ${socket.id} - 10s grace period`);
         const userId = socketUserMap.get(socket.id);
+        console.log("why ",userId)
         if(!userId) return;
 
         setTimeout(async ()=> {            
@@ -316,11 +318,11 @@ io.on("connection",(socket:Socket) => {
                                     if(peerSocket) peerSocket.leave(roomId);
 
                                     // Only delete mappings for the disconnecting user, not the remaining peer
-                                    // if(peerUserId){
-                                    //     userRoomMap.delete(peerUserId);
-                                    //     userSocketMap.delete(peerUserId);
-                                    //     socketUserMap.delete(peerSocketId); // <-- REMOVE THIS LINE
-                                    // }
+                                    if(peerUserId){
+                                        userRoomMap.delete(peerUserId);
+                                        // userSocketMap.delete(peerUserId);
+                                        // socketUserMap.delete(peerSocketId);
+                                    }
 
                                 })
                             }
@@ -329,8 +331,7 @@ io.on("connection",(socket:Socket) => {
                     })
                 }
 
-                socketUserMap.delete(socket.id);
-                userSocketMap.delete(userId)
+                userRoomMap.delete(userId);
             }
 
         },10*10*10*10)
