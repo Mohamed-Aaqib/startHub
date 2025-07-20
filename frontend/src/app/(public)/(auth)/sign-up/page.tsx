@@ -1,7 +1,7 @@
 "use client"
 import React from 'react'
 import { Cabin } from 'next/font/google';
-import { EmailIcon, GoogleIcon, NameIcon, PasswordIcon } from '@/components/svgs/Auth';
+import { ConfirmPasswordIcon, EmailIcon, GoogleIcon, NameIcon, PasswordIcon } from '@/components/svgs/Auth';
 import { useRouter } from 'next/navigation';
 
 const cabin = Cabin({
@@ -16,8 +16,8 @@ const page = () => {
 
     return (
         <div className={`w-full min-h-screen flex flex-col items-center justify-center ${cabin.className}`}>
-            <div className="max-w-xs w-full flex flex-col gap-3">
-                <h1 className="text-4xl font-bold py-4 text-center">Sign Up</h1>
+            <div className="max-w-xs w-full flex flex-col gap-3 pb-20">
+                <h1 className="text-4xl font-bold py-4 text-center mt-20">Sign Up</h1>
                 <div>
                     <label htmlFor="name" className="block mb-1 ml-1 text-sm font-medium text-gray-700 select-none">
                         Name
@@ -43,6 +43,15 @@ const page = () => {
                     <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-white border border-gray-300 transition-colors duration-200 focus-within:border-[#298dd4] focus-within:shadow-[0_0_0_2px_#298dd433]">
                         <PasswordIcon className="text-gray-400 w-4 h-4" />
                         <input id="password" placeholder='*****' type="password" className="outline-none border-none bg-transparent flex-1 text-base py-1 px-2"/>
+                    </div>
+                </div>
+                <div>
+                    <label htmlFor="confirmPass" className="block mb-1 ml-1 text-sm font-medium text-gray-700 select-none">
+                        Confirm Password
+                    </label>
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-white border border-gray-300 transition-colors duration-200 focus-within:border-[#298dd4] focus-within:shadow-[0_0_0_2px_#298dd433]">
+                        <ConfirmPasswordIcon className="text-gray-400 w-4 h-4" />
+                        <input id="confirmPass" placeholder='*****' type="password" className="outline-none border-none bg-transparent flex-1 text-base py-1 px-2"/>
                     </div>
                 </div>
                 <button className='bg-black w-full mt-4 mx-auto text-white px-6 py-2 rounded-full cursor-pointer'>

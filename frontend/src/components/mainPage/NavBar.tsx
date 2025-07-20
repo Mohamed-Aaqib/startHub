@@ -61,7 +61,7 @@ const NavBar = () => {
                     navbarState == "scrolled" && "translate-y-0 opacity-100 rounded-md bg-white/60 backdrop-blur-md shadow-lg border border-white/30"
                 )}
             >
-                <h2 className={`font-bold text-xl relative ml-5 `+ rethinkSans.className}>
+                <h2 className={`font-bold cursor-pointer text-xl relative ml-5 `+ rethinkSans.className} onClick={() => router.push("/")}>
                     <span className="absolute -top-0 z-[1] -left-1 w-3 h-3">
                         <span className="block w-full h-[3px] bg-[#111cb6] absolute top-0 left-0"></span>
                         <span className="block h-full w-[3px] bg-[#111cb6] absolute top-0 left-0"></span>
