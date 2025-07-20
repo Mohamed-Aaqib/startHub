@@ -58,7 +58,9 @@ const Hero = () => {
             }}>
                 parallex
             </div>
-
+            <div
+                className="absolute bottom-0 left-1/2 border-b-0 z-20 -translate-x-1/2 w-20 h-10 bg-black rounded-t-full border-t-4 border-x-4 border-[#111cb6]"
+            />
         </main>
     )
 }

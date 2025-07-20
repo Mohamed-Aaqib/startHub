@@ -100,3 +100,58 @@ body {
 .Btn:active {
   transform: scale(0.95);
 }
+
+.ShadowCard{
+  box-shadow: inset 0 -3em 3em rgba(0,0,0,0.1),
+  0 0  0 2px rgb(190, 190, 190),
+  0.3em 0.3em 1em rgba(0,0,0,0.3);
+  border-radius: 10px;
+  transition: border-radius 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+}
+
+.features-h1-left {
+  position: relative;
+  padding-left: 16px;
+}
+.features-h1-left::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  inset-block: 0;
+  width: 4px;
+  background: #111cb6;
+  box-shadow: 3px 0 6px 0 #111cb666;
+}
+
+.features-h1-right {
+  position: relative;
+  padding-right: 16px;
+}
+.features-h1-right::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  inset-block: 0;
+  width: 4px;
+  background: #111cb6;
+  box-shadow: -3px 0 6px 0 #111cb666;
+}
+
+.features-fade {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.features-fade.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.dot-fade {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+.dot-fade.show {
+  opacity: 1;
+}
