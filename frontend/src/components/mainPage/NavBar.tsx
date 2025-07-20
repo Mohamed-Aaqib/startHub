@@ -4,6 +4,7 @@ import { Rethink_Sans } from 'next/font/google';
 import { Cabin } from 'next/font/google';
 import User from '../svgs/User';
 import clsx from 'clsx';
+import { useRouter } from 'next/navigation';
 
 const rethinkSans = Rethink_Sans({
     subsets: ['latin'],
@@ -23,6 +24,7 @@ const NavBar = () => {
 
     const lastScrollRef = useRef<number>(0);
     const [navbarState,setNavbarState] = useState<NavBarState>('default');
+    const router = useRouter();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -80,10 +82,10 @@ const NavBar = () => {
                 <section>
                     {true ? (
                         <div className={" flex items-center gap-6 justify-between pr-2 "+ cabin.className}>
-                            <p className='font-bold cursor-pointer underline-animate'>
+                            <p className='font-bold cursor-pointer underline-animate' onClick={() => router.push("/sign-up")}>
                                 Sign Up
                             </p>
-                            <button className="Btn flex items-center gap-2">
+                            <button className="Btn flex items-center gap-2" onClick={() => router.push("/sign-in")}>
                                 Log In <User className="w-5 h-5" style={{color: '#f3f4f6', fill: '#f3f4f6'}} />
                             </button>
                         </div>
