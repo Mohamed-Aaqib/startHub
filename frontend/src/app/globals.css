@@ -155,3 +155,207 @@ body {
 .dot-fade.show {
   opacity: 1;
 }
+
+.footer-card {
+  width: 100%;
+  height: 13rem;
+  position: relative;
+  overflow: hidden;
+  background: #c5c3c3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wave-svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  z-index: 0;
+}
+
+.wave-svg path {
+  fill: #fff;
+  opacity: 0.3;
+  transition: fill 0.3s;
+}
+
+.wave1 {
+  animation: wave-move1 4s linear infinite;
+  z-index: 1;
+}
+.wave1 path {
+  fill: #fff;
+  opacity: 0.35;
+}
+
+.wave2 {
+  animation: wave-move2 5s linear infinite;
+  z-index: 2;
+}
+.wave2 path {
+  fill: #f3f3f3;
+  opacity: 0.25;
+}
+
+.wave3 {
+  animation: wave-move3 6s linear infinite;
+  z-index: 3;
+}
+.wave3 path {
+  fill: #e0e0e0;
+  opacity: 0.18;
+}
+
+.wave4 {
+  animation: wave-move4 8s linear infinite;
+  z-index: 4;
+}
+.wave4 path {
+  fill: #fff;
+  opacity: 0.12;
+}
+
+@keyframes wave-move1 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes wave-move2 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes wave-move3 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes wave-move4 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.infotop {
+  text-align: center;
+  font-size: 1.25rem;
+  color: white;
+  font-weight: 600;
+  z-index: 10;
+  position: relative;
+}
+
+.name {
+  font-size: 0.875rem;
+  font-weight: 300;
+  margin-top: 0.5rem;
+  text-transform: lowercase;
+}
+
+.footerSmTexts{
+  @apply hover:text-[#111cb6] cursor-pointer tracking-wide transition-colors duration-300
+}
+
+
+
+
+
+.example-2 {
+  list-style: none;
+}
+
+.example-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.example-2 .icon-content {
+  margin: 0 2px;
+  position: relative;
+}
+.example-2 .icon-content .tooltip {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 5px;
+  opacity: 0;
+  visibility: hidden;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+.example-2 .icon-content:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  top: -50px;
+}
+.example-2 .icon-content a {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: #4d4d4d;
+  background-color: #fff;
+  transition: all 0.3s ease-in-out;
+}
+.example-2 .icon-content a:hover {
+  box-shadow: 3px 2px 45px 0px rgb(0 0 0 / 12%);
+}
+.example-2 .icon-content a svg {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+}
+.example-2 .icon-content a:hover {
+  color: white;
+}
+.example-2 .icon-content a .filled {
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  background-color: #000;
+  transition: all 0.3s ease-in-out;
+}
+.example-2 .icon-content a:hover .filled {
+  height: 100%;
+}
+
+.example-2 .icon-content a[data-social="linkedin"] .filled,
+.example-2 .icon-content a[data-social="linkedin"] ~ .tooltip {
+  background-color: #0274b3;
+}
+
+.example-2 .icon-content a[data-social="github"] .filled,
+.example-2 .icon-content a[data-social="github"] ~ .tooltip {
+  background-color: #24262a;
+}
+.example-2 .icon-content a[data-social="instagram"] .filled,
+.example-2 .icon-content a[data-social="instagram"] ~ .tooltip {
+  background: linear-gradient(
+    45deg,
+    #405de6,
+    #5b51db,
+    #b33ab4,
+    #c135b4,
+    #e1306c,
+    #fd1f1f
+  );
+}
+.example-2 .icon-content a[data-social="youtube"] .filled,
+.example-2 .icon-content a[data-social="youtube"] ~ .tooltip {
+  background-color: #ff0000;
+}
+
+.example-2 .icon-content a[data-social="twitter"] .filled,
+.example-2 .icon-content a[data-social="twitter"] ~ .tooltip {
+  background-color: #000;
+}

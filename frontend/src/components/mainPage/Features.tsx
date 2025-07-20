@@ -163,7 +163,7 @@ const Features = () => {
                     </div>
                 </div>
                 <div>
-                    <div className={"w-7 h-7 bg-black rounded-full absolute top-[495px] left-[calc(50%+2px)] -translate-x-1/2 border-4 border-[#298dd4] dot-fade"} />
+                    <div className={"w-7 h-7 bg-black rounded-full absolute top-[495px] left-[calc(50%+5px)] -translate-x-1/2 border-4 border-[#298dd4] dot-fade"} />
                     <div className={"absolute top-[450px] right-10 p-3 max-w-xl flex flex-col items-end justify-center gap-5 features-fade"}>
                         <h1 className="text-4xl font-extrabold features-h1-right">Connect</h1>
                         <p className="font-medium">

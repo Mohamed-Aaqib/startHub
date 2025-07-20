@@ -62,7 +62,7 @@ const NavBar = () => {
                 <h2 className={`font-bold text-xl relative ml-5 `+ rethinkSans.className}>
                     <span className="absolute -top-0 z-[1] -left-1 w-3 h-3">
                         <span className="block w-full h-[3px] bg-[#111cb6] absolute top-0 left-0"></span>
-                        <span className="block h-full w-0.5 bg-[#111cb6] absolute top-0 left-0"></span>
+                        <span className="block h-full w-[3px] bg-[#111cb6] absolute top-0 left-0"></span>
                     </span>
                     Start
                     <span className='text-[#111cb6] rounded-br-none border-b-[1px] border-r-[1px] ml-[2px] px-[1px] rounded-sm bg-[#ffffff]'>
