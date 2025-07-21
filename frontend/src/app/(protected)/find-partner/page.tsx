@@ -205,12 +205,14 @@ const page = () => {
 
 
     return (
-        <div className='h-screen'>
-            <h1 className='md:text-5xl text-2xl font-extrabold text-center'>
-                This is where the magic happens
-            </h1>
-            <div className='mx-auto mt-10 max-w-[450px] md:max-w-3xl w-full p-1 space-y-2 bg-green-700 min-h-[400px]'>
-                
+        <div className='h-full'>
+            <div>
+                <h1 className='text-4xl'>Find Your Parter</h1>
+                <div>
+                    tekken here
+                </div>
+            </div>
+            <div className='mx-auto max-w-[450px] md:max-w-3xl w-full p-1 space-y-2 bg-green-700 min-h-[400px]'>
                 <video ref={localVideoRef} autoPlay playsInline className={`${!isCameraOn && "hidden" } max-w-[300px] h-full block mx-auto rounded-2xl`}/>
                 {!isCameraOn && (
                     <div className='max-w-[300px] w-full mx-auto h-[350px] flex items-center justify-center bg-black text-white rounded-2xl'>
