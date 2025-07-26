@@ -73,7 +73,8 @@ const NavBar = () => {
     const [hoverStyle, setHoverStyle] = useState({ left: 0, top: 0, width: 0, height: 0, visible: false });
     const containerRef = useRef<HTMLDivElement>(null);
 
-
+    // https://chatgpt.com/c/6885002b-6080-8013-82c6-b24da139af29
+    
     const handleHover = (e: React.MouseEvent<HTMLDivElement>) => {
         const target = e.currentTarget;
         const rect = target.getBoundingClientRect();
