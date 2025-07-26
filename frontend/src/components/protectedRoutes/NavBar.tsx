@@ -49,11 +49,6 @@ const NavBar = () => {
             routeName:"repos"
         },
         {
-            Icon:MessagesSquare,
-            route:"/socials",
-            routeName:"messages"
-        },
-        {
             Icon:NotebookPen,
             route:"/planning",
             routeName:"planning"
@@ -111,7 +106,7 @@ const NavBar = () => {
                         }}
                     />
                     {navElems.map(({Icon,route,routeName}) => (
-                        <NavIcons Icon={Icon} handleHover={handleHover} route={route} routeName={routeName} />
+                        <NavIcons key={route} Icon={Icon} handleHover={handleHover} route={route} routeName={routeName} />
                     ))}
 
                 </div>
