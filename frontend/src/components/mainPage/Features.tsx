@@ -42,6 +42,8 @@ const Features = () => {
     const [svgHeight, setSvgHeight] = useState<number | null>(null);
     const [pathLength, setPathLength] = useState(0);
     const [mounted,setMounted] = useState(false);
+    const [arrowPos, setArrowPos] = useState<{ x: number; y: number; angle: number } | null>(null);
+    const [arrowVisible, setArrowVisible] = useState(true);
 
     useEffect(()=>{
         setMounted(true);
@@ -79,9 +81,26 @@ const Features = () => {
 
             progress = Math.min(Math.max(progress, 0), 1);
 
-            const drawLength = length * progress;
+            const minProgress = 0.01; // never 0
+            const clampedProgress = Math.max(progress, minProgress);
+            const drawLength = length * clampedProgress;
             pathRef.current!.style.strokeDashoffset = `${length - drawLength}`;
 
+            // Arrowhead logic
+            if (pathRef.current) {
+                const currentLength = drawLength;
+                const point = pathRef.current.getPointAtLength(currentLength);
+                const delta = 1;
+                const prev = pathRef.current.getPointAtLength(Math.max(0, currentLength - delta));
+                const angle = Math.atan2(point.y - prev.y, point.x - prev.x) * (180 / Math.PI);
+                setArrowPos({ x: point.x, y: point.y, angle });
+                // Hide arrow at start or end
+                if (progress <= minProgress || progress >= 1) {
+                    setArrowVisible(false);
+                } else {
+                    setArrowVisible(true);
+                }
+            }
         };
 
         window.addEventListener("scroll", onScroll);
@@ -92,7 +111,6 @@ const Features = () => {
             window.removeEventListener("scroll", onScroll);
             window.removeEventListener("resize", onScroll);
         };
-        
     }, [svgHeight]);
 
     useEffect(() => {
@@ -150,6 +168,19 @@ const Features = () => {
                     strokeLinecap="round"
                     style={{ transition: "stroke-dashoffset 0.15s ease-out" }}
                     />
+                    {arrowPos && arrowVisible && (
+                        <g
+                            transform={`translate(${arrowPos.x},${arrowPos.y + 8}) rotate(${arrowPos.angle})`}
+                            style={{ pointerEvents: "none" }}
+                        >
+                            <polygon
+                                points="0,0 -48,22 -34,0 -48,-22"
+                                fill="#298dd4"
+                                stroke="black"
+                                strokeWidth={4}
+                            />
+                        </g>
+                    )}
                 </svg>
 
                 <div>

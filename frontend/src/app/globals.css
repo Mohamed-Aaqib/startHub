@@ -252,7 +252,7 @@ body {
 }
 
 .footerSmTexts{
-  @apply hover:text-[#111cb6] cursor-pointer tracking-wide transition-colors duration-300
+  @apply hover:text-[#111cb6] cursor-pointer tracking-wide transition-colors duration-300 font-light
 }
 
 
