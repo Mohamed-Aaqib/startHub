@@ -86,7 +86,6 @@ const Features = () => {
             const drawLength = length * clampedProgress;
             pathRef.current!.style.strokeDashoffset = `${length - drawLength}`;
 
-            // Arrowhead logic
             if (pathRef.current) {
                 const currentLength = drawLength;
                 const point = pathRef.current.getPointAtLength(currentLength);
@@ -94,7 +93,6 @@ const Features = () => {
                 const prev = pathRef.current.getPointAtLength(Math.max(0, currentLength - delta));
                 const angle = Math.atan2(point.y - prev.y, point.x - prev.x) * (180 / Math.PI);
                 setArrowPos({ x: point.x, y: point.y, angle });
-                // Hide arrow at start or end
                 if (progress <= minProgress || progress >= 1) {
                     setArrowVisible(false);
                 } else {

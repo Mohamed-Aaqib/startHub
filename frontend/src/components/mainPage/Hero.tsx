@@ -73,7 +73,7 @@ const Hero = () => {
             <div className="absolute top-1/2 left-1/3 w-52 h-32 bg-[#298dd4] rounded-md opacity-40 blur-[50px] pointer-events-none"/>
             <div className="absolute inset-0 bg-white/30 backdrop-blur-lg z-10 pointer-events-none" />
 
-            //TODO: we could use client rect to get offset and calculate it easier from there. 
+            {/* //TODO: we could use client rect to get offset and calculate it easier from there.  */}
             <div className={` ${stopSticky ? "relative mt-[320vh]" : "sticky top-[275px]"}  z-20 text-center mx-auto max-w-5xl mt-[200px] flex flex-col items-center gap-5 ` + rethinkSans.className}>
                 <h1 className="text-7xl text-center font-bold tracking-tight text-black">
                     Connect. Build. Launch.

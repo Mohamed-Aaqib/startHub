@@ -8,6 +8,7 @@ dotenv.config({
 
 let channel:amqp.Channel;
 
+// think about scaling , since multiple users can use the same channel.  Create a channel pool its better 
 export const connectRabbit = async () => {
     if(channel) return;
     const connection = await amqp.connect(process.env.RABBITMQ_URL as string);
