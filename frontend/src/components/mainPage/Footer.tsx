@@ -26,14 +26,7 @@ export default function Footer() {
             <div className="z-20 p-2 absolute inset-0 ">
                 <div className='flex items-center justify-between py-3'>
                     <h2 className={`font-bold text-xl relative ml-5 `}>
-                        <span className="absolute -top-0 z-[1] -left-1 w-3 h-3">
-                            <span className="block w-full h-[3px] bg-[#111cb6] absolute top-0 left-0"></span>
-                            <span className="block h-full w-[3px] bg-[#111cb6] absolute top-0 left-0"></span>
-                        </span>
-                        Start
-                        <span className='text-[#111cb6] rounded-br-none border-b-[1px] border-r-[1px] ml-[2px] px-[1px] rounded-sm bg-[#ffffff]'>
-                            Hub
-                        </span>
+                        @StartHub_2025
                     </h2>
                     <div>
                         <ul className="example-2 flex items-center justify-center gap-5">
@@ -42,7 +35,6 @@ export default function Footer() {
                                     <div className="filled"></div>
                                     <LinkedInIcon/>
                                 </a>
-                                {/* <div className="tooltip">LinkedIn</div> */}
                             </li>
                             
                             <li className="icon-content">
@@ -50,7 +42,6 @@ export default function Footer() {
                                     <div className="filled"></div>
                                     <GitHubIcon/>
                                 </a>
-                                {/* <div className="tooltip">GitHub</div> */}
                             </li>
                             
                             <li className="icon-content">
@@ -58,21 +49,19 @@ export default function Footer() {
                                     <div className="filled"></div>
                                     <InstagramIcon/>
                                 </a>
-                                {/* <div className="tooltip">Instagram</div> */}
                             </li>
                             <li className="icon-content">
                                 <a href="https://twitter.com/" aria-label="Twitter" data-social="twitter">
                                     <div className="filled"></div>
                                     <TwitterXIcon/>
                                 </a>
-                                {/* <div className="tooltip">Twitter (X)</div> */}
                             </li>
                         
                         </ul>
 
                     </div>
                 </div>
-                <div className='grid grid-cols-3 mt-5 text-center gap-10 font-bold w-full'>
+                <div className='grid grid-cols-3 mt-5 text-center gap-5 font-bold w-full'>
                     <p className='footerSmTexts'>Features</p>
                     <p className='footerSmTexts'>Pricing</p>
                     <p className='footerSmTexts'>About</p>

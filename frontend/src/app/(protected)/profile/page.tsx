@@ -2,7 +2,7 @@ import React from 'react'
 
 const page = () => {
     return (
-        <div>groupId payments</div>
+        <div>Profile</div>
     )
 }
 

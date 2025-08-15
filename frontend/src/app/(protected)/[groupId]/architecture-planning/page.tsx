@@ -2,7 +2,7 @@ import React from 'react'
 
 const page = () => {
     return (
-        <div>groupId repos</div>
+        <div>Architecture Planning</div>
     )
 }
 
