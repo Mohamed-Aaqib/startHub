@@ -553,3 +553,164 @@ body {
   visibility: visible;
   opacity: 1;
 }
+
+/* HeroUI-style smooth select animation */
+.smooth-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1em;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  border: 1px solid #e1e5e9;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+}
+
+.smooth-select:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.smooth-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  transform: translateY(-1px);
+}
+
+.smooth-select:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Dropdown animation */
+.smooth-select option {
+  background-color: #ffffff;
+  color: #374151;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.smooth-select option:hover {
+  background-color: #f3f4f6;
+}
+
+.smooth-select option:checked {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+/* Custom dropdown styling for webkit browsers */
+.smooth-select::-webkit-listbox {
+  background-color: #ffffff;
+  border: 1px solid #e1e5e9;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  padding: 0.5rem 0;
+  margin-top: 0.25rem;
+  animation: dropdownSlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Firefox specific styling */
+.smooth-select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #000;
+}
+
+.smooth-select:-moz-listbox {
+  background-color: #ffffff;
+  border: 1px solid #e1e5e9;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Hover / focus on the select box */
+
+.media-select{
+  max-width: 350px;
+  padding:8px 8px;
+  border: 1px solid #e1e5e9;
+  border-radius: 0.5rem;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+  transition: transform 300ms ease-in-out;
+}
+
+
+.media-select:hover,
+.media-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  transform: scale(1.02);
+}
+
+/* Option styling (works in Firefox and partially in some others) */
+.media-select option {
+  padding: 0.5rem 1rem;
+  background-color: #fff; /* background for option */
+  color: #333;
+  width: 100%;           /* take full width of the select */
+  margin-top: 0.25rem;   /* small margin on top */
+  border: none;           /* remove border */
+  border-radius: 0.375rem; /* medium rounded corners (6px) */
+  outline: none;          /* remove default focus outline */
+  
+}
+
+/* Optional: different style for selected option */
+.media-select option:checked {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 6px;           /* width of vertical scrollbar */
+  height: 6px;          /* height of horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;  /* make track invisible */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* subtle color */
+  border-radius: 3px;                    /* rounded edges */
+  border: 1px solid transparent;         /* optional for spacing */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.3); /* slightly darker on hover */
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;          /* make scrollbar thin */
+  scrollbar-color: rgba(0,0,0,0.2) transparent; /* thumb and track color */
+}
