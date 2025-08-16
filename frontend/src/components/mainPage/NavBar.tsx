@@ -4,7 +4,7 @@ import { Rethink_Sans } from 'next/font/google';
 import { Cabin } from 'next/font/google';
 import User from '../svgs/User';
 import clsx from 'clsx';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 const rethinkSans = Rethink_Sans({
     subsets: ['latin'],
@@ -25,6 +25,7 @@ const NavBar = () => {
     const lastScrollRef = useRef<number>(0);
     const [navbarState,setNavbarState] = useState<NavBarState>('default');
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -51,8 +52,11 @@ const NavBar = () => {
 
     },[])
 
+
+    if(pathname == "/sign-in" || pathname == "/sign-up") return <></>;
+
     return (
-        <nav className='fixed p-3 w-full z-50'>
+        <nav className={`fixed p-3 w-full z-50`}>
             <div
                 className={clsx(
                     "flex gap-3 max-w-6xl mx-auto items-center justify-between px-1 py-2 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform will-change-opacity",
