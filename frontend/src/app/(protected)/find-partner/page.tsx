@@ -214,9 +214,7 @@ const page = () => {
         if(localVideoRef.current){
             localVideoRef.current.srcObject = stream;
         }
-
         setUpMic(stream)
-
     }
 
 
@@ -310,17 +308,18 @@ const page = () => {
                                     <input id='tags' type='text' className='bg-gray-200 w-[90%] border-gray-300 border-2 text-gray-700 placeholder-gray-400 p-2 rounded-md ring-0 transition duration-300 focus:ring-0 focus:outline-none focus:border-blue-600' placeholder='add tags'/>
                                 </div>
                                 <div className='flex-[0.6] relative h-full'>
-                                    <div className={`${rethinkSans.className} space-y-4 overflow-y-scroll h-full w-full p-3 shadow-md border-b-2 border-r-2 border-[#2c2b2b] bg-[#1d1c1c] rounded-md`}>
-                                        <h1 className='text-4xl flex items-center gap-x-3 font-bold text-[#555555]'>
-                                            Tags <Tag className='w-10 h-10 text-blue-500'/>
+                                    <div className={`${rethinkSans.className} space-y-4 overflow-y-scroll h-full w-full p-3 border-2 border-[#2c2b2b] bg-[#1d1c1c] rounded-md`}>
+                                        <h1 className='text-4xl flex items-center gap-x-3 font-bold text-[#ffff]'>
+                                            Tags <Tag className='w-10 h-10'/>
                                         </h1>
+                                        <hr className='text-[#555555]'/>
                                         <div className='flex flex-row flex-wrap w-full items-center'>
-                                            <div className='group shadow-md border-[2px] hover:border-red-600 border-blue-500 hover:shadow-lg relative cursor-pointer max-w-40 truncate  transition duration-200 bg-gray-300  font-medium rounded-full px-2 py-1'>
+                                            <div className='group shadow-md border-[2px] hover:border-red-600 border-gray-500 hover:shadow-lg relative cursor-pointer max-w-40 truncate  transition duration-200 bg-gray-300  font-medium rounded-full px-2 py-1'>
                                                 Name
                                             </div>
                                         </div>
                                     </div>
-                                    <p className='absolute text-gray-400 -bottom-7 left-0'>
+                                    <p className='absolute text-gray-500 -bottom-7 left-0'>
                                         * click on tags to <span className='font-bold text-red-600'>delete</span> it
                                     </p>
                                 </div>

@@ -89,8 +89,8 @@ const NavBar = () => {
                             <p className='font-bold cursor-pointer underline-animate' onClick={() => router.push("/sign-up")}>
                                 Sign Up
                             </p>
-                            <button className="Btn flex items-center gap-2" onClick={() => router.push("/sign-in")}>
-                                Log In <User className="w-5 h-5" style={{color: '#f3f4f6', fill: '#f3f4f6'}} />
+                            <button className=" bg-black rounded-full text-white p-[5px] px-2 cursor-pointer flex items-center gap-2" onClick={() => router.push("/sign-in")}>
+                                Log In <User className="w-4 h-4" style={{color: '#f3f4f6', fill: '#f3f4f6'}} />
                             </button>
                         </div>
 

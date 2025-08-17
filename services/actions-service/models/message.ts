@@ -3,7 +3,11 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 
 interface IMessage extends Document{
     content?:string
-    mediaUrl?:string
+    media?:{
+        url:string;
+        type:"image"|"video"|"audio"|"file";
+        metadata:Record<string,any>;
+    }
     sender:Types.ObjectId
     chatId:string
     type:"text" | "media"
@@ -15,8 +19,16 @@ const messageSchema = new mongoose.Schema<IMessage>({
     content:{
         type:String,
     },
-    mediaUrl:{
-        type:String,
+    media:{
+        url:String,
+        type:{
+            type:String,
+            enum:["image", "video", "audio", "file"],
+        },
+        metadata:{
+            type:Schema.Types.Mixed
+        }
+
     },
     sender:{
         type:Schema.Types.ObjectId,

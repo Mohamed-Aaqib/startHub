@@ -67,6 +67,10 @@ const page = () => {
     }, [roomId]);
 
 
+    // TODO: Modularize it
+
+    
+
     useEffect(()=>{
 
         navigator.mediaDevices.getUserMedia({video:true,audio:true}).then((stream)=>{
@@ -272,7 +276,7 @@ const page = () => {
         }
     }, [searchParams]);
 
-    const toggleVideo = () => {
+    const toggleVideo = async () => {
         if (!localStream.current) return;
         setLoading(true);
         try {
@@ -280,6 +284,20 @@ const page = () => {
             if (videoTrack) {
                 videoTrack.enabled = !videoTrack.enabled;
                 setVideoEnabled(videoTrack.enabled);
+
+                // if(videoTrack.enabled){
+                //     localStream.current.getVideoTracks().forEach((track) => track.stop() );
+                //     if(localVideoRef.current){
+                //         localVideoRef.current.srcObject = null;
+                //     }
+                // }else{
+                //     const stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+                //     localStream.current = stream;
+                //     if(localVideoRef.current){
+                //         localVideoRef.current.srcObject = stream;
+                //     }
+                // }
+
                 socket.emit("video_state_change", { roomId, enabled: videoTrack.enabled, from: currId });
             }
         } catch (err: any) {

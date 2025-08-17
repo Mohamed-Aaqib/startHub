@@ -15,11 +15,6 @@ const NavBar = () => {
 
     const navElems:INavElems[] = [
         {
-            Icon:LayoutDashboard,
-            route:"/dashboard",
-            routeName:"dashboard"
-        },
-        {
             Icon:Users,
             route:"/find-partner",
             routeName:"find your partner"
