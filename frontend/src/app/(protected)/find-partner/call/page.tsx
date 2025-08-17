@@ -1,5 +1,9 @@
 "use client"
+import NavBar from '@/components/protectedRoutes/find-partner/call/Navbar';
 import socket from '@/components/sockets/socket';
+import Send from '@/components/svgs/Send';
+import { ArrowBigRightDashIcon, CameraOff, Mic, MicOff, UserRoundPlus, Video, VideoOff, VolumeOff } from 'lucide-react';
+import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 
@@ -10,6 +14,12 @@ const ICE_SERVERS = [
     //     username: "your-username",
     //     credential: "your-credential",
     // },
+]
+
+const messages = [
+    {user:"me",messages:"messages off the rooof "},
+    {user:"you",messages:"this is a long this is a long this is a long this is a long this is a long this is a long this is a long this is a long this is a long this is a long this is a long  "},
+    {user:"me",messages:"did that message just work "}
 ]
 
 const page = () => {
@@ -350,86 +360,114 @@ const page = () => {
     }, [handleBeforeUnload]);
 
     return (
-        <div className='h-screen w-screen flex flex-col items-center justify-center bg-green-50'>
-            <h1 className='font-extrabold md:text-4xl text-xl block text-center py-5'>Did you find your associate?</h1>
-            <h2>room id : {roomId}</h2>
-            <h2>userId : {currId}</h2>
-            {errorMsg && (
-                <div className='bg-red-100 text-red-700 px-4 py-2 rounded mb-4'>{errorMsg}</div>
-            )}
-            {isMounted && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-5xl p-6 bg-green-800 rounded-lg shadow-lg">
-                    <div className='bg-black rounded-md relative flex flex-col items-center justify-center h-64 md:h-80'>
-                        <video ref={localVideoRef} autoPlay className='w-full h-full rounded-xl bg-gray-800 object-cover'/>
-                        {!videoEnabled && (
-                            <div className="absolute inset-0 bg-black flex items-center justify-center text-white text-2xl font-bold">
-                                <span className="flex flex-col items-center"><span>📹</span>Camera Off</span>
+        <div className='h-screen w-full flex flex-col bg-green-50'>
+            <NavBar/>
+            <div className='flex flex-row h-full overflow-y-auto'>
+                <div className=' p-2 flex-[0.75]'>
+                    {errorMsg && (
+                        <div className='bg-red-100 text-red-700 px-4 py-2 rounded mb-4'>{errorMsg}</div>
+                    )}
+                    {isMounted && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 w-full mx-auto max-w-5xl p-6">
+                            <div className='bg-black shadow-lg shadow-black/40 border border-gray-600 rounded-md relative flex flex-col items-center justify-center h-64 md:h-80 w-[500px]'>
+                                <video ref={localVideoRef} autoPlay className='w-full h-full rounded-md bg-gray-800 object-cover'/>
+                                {!videoEnabled && (
+                                    <div className="absolute inset-0 rounded-md bg-gradient-to-b from-gray-500 to-gray-600 flex items-center justify-center text-white text-2xl font-bold">
+                                        <div className="text-center w-10 h-10">
+                                            <CameraOff className='w-full h-full'/>
+                                        </div>
+                                    </div>
+                                )}
+                                {!audioEnabled && (
+                                    <div className="absolute bottom-2 right-2 border-2 border-red-800 bg-red-600 text-white p-2 rounded-full text-sm">
+                                        <VolumeOff/>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                        {!audioEnabled && (
-                            <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-sm">
-                                🔇 Muted
+                            <div className='bg-gradient-to-b from-gray-700 to-gray-800  rounded-md relative flex flex-col items-center justify-center h-64 md:h-80 w-[500px]'>
+                                {!isWaiting ? (
+                                    <>
+                                        <video ref={remoteVideoRef} autoPlay className='w-full h-full rounded-md bg-gray-800 object-cover'/>
+                                        {!remoteVideoEnabled && (
+                                            <div className="absolute inset-0 bg-gradient-to-b from-gray-700 to-gray-800 flex items-center justify-center text-white text-2xl font-bold">
+                                                <div className="text-center w-10 h-10">
+                                                    <CameraOff className='w-full h-full'/>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {!remoteAudioEnabled && (
+                                            <div className="absolute bottom-2 right-2 border-2 border-red-800 bg-red-600 text-white p-2 rounded-full text-sm">
+                                                <VolumeOff/>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="w-full h-full flex items-center rounded-md bg-gradient-to-b shadow-lg text-blue-500 shadow-black/40 border border-gray-600 from-gray-700 to-gray-800 justify-center text-xl bg-gray-100">
+                                        <div className="relative text-center h-10 w-10">
+                                            <Image fill alt='' className='object-contain invert hue-rotate-180 saturate-200' src="/blocks-shuffle-3.svg"/>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </div>
+                    )}
+
+                    <div className='shadow-[0_4px_6px_rgba(0,0,0,0.5),0_8px_12px_rgba(0,0,0,0.4)] flex items-center justify-between gap-4 mt-15 bg-[#1b1919] p-1 rounded-full max-w-3xl mx-auto border-b-4 border-[#282626]'>
+                        <div className='space-x-5 pl-2'>
+                            <button 
+                                onClick={toggleVideo} 
+                                disabled={loading}
+                                className={`p-2 cursor-pointer rounded-full font-semibold transition-all h-fit ${
+                                    videoEnabled 
+                                        ? ' text-[#555555] hover:bg-[#262323]' 
+                                        : 'bg-red-600 text-white hover:bg-red-700'
+                                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {videoEnabled ? <Video/> : <VideoOff/>}
+                            </button>
+                            <button 
+                                onClick={toggleAudio} 
+                                disabled={loading}
+                                className={`p-2 cursor-pointer rounded-full font-semibold transition-all h-fit ${
+                                    audioEnabled 
+                                    ? ' text-[#555555] hover:bg-[#262323]' 
+                                    : 'bg-red-600 text-white hover:bg-red-700'
+                                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {audioEnabled ? <Mic/> : <MicOff/>}
+                            </button>
+                            <button className='p-2 hover:bg-[#262323] cursor-pointer rounded-full font-semibold transition-all h-fit text-blue-700'>
+                                <UserRoundPlus/>
+                            </button>
+                        </div>
+                        <button 
+                            onClick={handleSkip} 
+                            className='bg-red-700 border-red-900 border-2 shadow-md cursor-pointer hover:bg-red-800 flex items-center text-white px-6 py-2 rounded-full font-semibold transition-all'
+                        >
+                            Skip <ArrowBigRightDashIcon/>
+                        </button>
                     </div>
-                    <div className='bg-white rounded-md relative flex flex-col items-center justify-center h-64 md:h-80'>
-                        {!isWaiting ? (
-                            <>
-                                <video ref={remoteVideoRef} autoPlay className='w-full h-full rounded-xl bg-gray-800 object-cover'/>
-                                {!remoteVideoEnabled && (
-                                    <div className="absolute inset-0 bg-black flex items-center justify-center text-black text-2xl font-bold">
-                                        <span className="flex flex-col items-center"><span>👤</span>Camera Off</span>
-                                    </div>
-                                )}
-                                {!remoteAudioEnabled && (
-                                    <div className="absolute bottom-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-sm">
-                                        🔇 Muted
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-black text-xl bg-gray-100 rounded-xl">
-                                <div className="text-center">
-                                    <div className="animate-spin text-3xl mb-2">⏳</div>
-                                    <div>Finding partner...</div>
-                                </div>
+
+                </div>
+                
+                <div className='flex-[0.25] h-full border-l-2 border-[#d1d5dc] overflow-y-auto'>
+                    <div className='h-[90%] flex flex-col items-center justify-end gap-3 bg-[#f1f1f1] pb-3'>
+                        {messages.map(({user,messages},idx)=>(
+                            <div className={`${user == "me" ? "bg-gray-300 text-right border-l-4 border-l-gray-500" : "border-r-4 border-r-blue-500 bg-blue-300"} p-2 text-black w-full`} key={idx}>
+                                {messages}
                             </div>
-                        )}
+                        ))}
+                    </div>
+                    <div className='h-[52px] flex flex-row'>
+                        <input type='text' placeholder='send a message' className='w-[90%] h-full p-2 focus:outline-0 border-2 border-blue-500'/>
+                        <button className='w-[10%] h-full flex items-center justify-center cursor-pointer bg-blue-500 text-white'>
+                            <Send/>
+                        </button>
                     </div>
                 </div>
-            )}
-            <div className='flex justify-center gap-4 mt-6'>
-                <button 
-                    onClick={toggleVideo} 
-                    disabled={loading}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
-                        videoEnabled 
-                            ? 'bg-gray-600 text-white hover:bg-gray-700' 
-                            : 'bg-red-600 text-white hover:bg-red-700'
-                    } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                    {videoEnabled ? '📹 Camera On' : '📹 Camera Off'}
-                    {loading && <span className="ml-2 animate-spin">⏳</span>}
-                </button>
-                <button 
-                    onClick={toggleAudio} 
-                    disabled={loading}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center gap-2 ${
-                        audioEnabled 
-                            ? 'bg-gray-600 text-white hover:bg-gray-700' 
-                            : 'bg-red-600 text-white hover:bg-red-700'
-                    } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                    {audioEnabled ? '🎤 Mic On' : '🔇 Mic Off'}
-                    {loading && <span className="ml-2 animate-spin">⏳</span>}
-                </button>
-                <button 
-                    onClick={handleSkip} 
-                    className='bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all'
-                >
-                    ⏭️ Skip
-                </button>
+
             </div>
+            <div className='w-full h-[51.2px]'/>
         </div>
     )
 }

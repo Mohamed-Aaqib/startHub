@@ -1,7 +1,7 @@
 "use client"
 import NavBar from '@/components/protectedRoutes/find-partner/Navbar';
 import socket from '@/components/sockets/socket';
-import { Binoculars, CameraOff, Info, Video, VideoOff } from 'lucide-react';
+import { Binoculars, CameraOff, Info, Tag, Video, VideoOff } from 'lucide-react';
 import { Cabin, Rethink_Sans } from 'next/font/google';
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
@@ -278,13 +278,17 @@ const page = () => {
                             Switch
                         </button>
                     </div>
+                    <button onClick={findPartner} className={`${rethinkSans.className} flex  items-center gap-2 p-2 mx-auto my-2 font-bold rounded-full transition-colors duration-200 ease-linear bg-gray-300 border-gray-500 shadow-xl cursor-pointer text-[#031d31]  border-[2px]`} >
+                        Start Looking
+                        <Binoculars/>
+                    </button>
 
                     <canvas id='mic-visualizer' className=' hidden w-full h-[20px] bg-black rounded-lg mt-2'/>
                 </div>
 
 
                 <div className='h-full w-full flex-[0.5] p-1'>
-                    <div className='h-[90%] w-full bg-gray-100 rounded-md p-2'>
+                    <div className='h-full w-full bg-gray-100 rounded-md p-2'>
                         <h1 className={`text-4xl ${rethinkSans.className} mx-auto w-fit font-black`}>Match Settings</h1>
                         <div className={`pb-2 px-2 pt-4 h-[60%] ${cabin.className} space-y-3 pt-10`}>
                             <div className='space-y-3'>
@@ -298,17 +302,22 @@ const page = () => {
                                     rows={2}
                                 />
                             </div>
-                            <div className='flex flex-row items-center'>
-                                <div className='space-y-2 flex-[0.4]'>
+                            <div className='flex flex-row items-center h-[160px]'>
+                                <div className='space-y-2 flex-[0.4] h-full'>
                                     <label htmlFor='tags' className='text-gray-600 block font-bold'>
                                         Tags to identify the user
                                     </label>
-                                    <input id='tags' type='text' className='bg-gray-200 border-gray-300 border-2 text-gray-700 placeholder-gray-400 p-2 rounded-md ring-0 transition duration-300 focus:ring-0 focus:outline-none focus:border-blue-600' placeholder='add tags'/>
+                                    <input id='tags' type='text' className='bg-gray-200 w-[90%] border-gray-300 border-2 text-gray-700 placeholder-gray-400 p-2 rounded-md ring-0 transition duration-300 focus:ring-0 focus:outline-none focus:border-blue-600' placeholder='add tags'/>
                                 </div>
-                                <div className='flex-[0.6] relative'>
-                                    <div className='flex flex-wrap overflow-autogap-2 items-center w-full p-3 shadow-md border-b-2 border-r-2 border-[#2c2b2b] bg-[#1d1c1c] rounded-md'>
-                                        <div className='group shadow-md border-[2px] hover:border-red-600 border-blue-500 hover:shadow-lg relative cursor-pointer max-w-40 truncate  transition duration-200 bg-gray-300  font-medium rounded-full px-2 py-1'>
-                                            Name
+                                <div className='flex-[0.6] relative h-full'>
+                                    <div className={`${rethinkSans.className} space-y-4 overflow-y-scroll h-full w-full p-3 shadow-md border-b-2 border-r-2 border-[#2c2b2b] bg-[#1d1c1c] rounded-md`}>
+                                        <h1 className='text-4xl flex items-center gap-x-3 font-bold text-[#555555]'>
+                                            Tags <Tag className='w-10 h-10 text-blue-500'/>
+                                        </h1>
+                                        <div className='flex flex-row flex-wrap w-full items-center'>
+                                            <div className='group shadow-md border-[2px] hover:border-red-600 border-blue-500 hover:shadow-lg relative cursor-pointer max-w-40 truncate  transition duration-200 bg-gray-300  font-medium rounded-full px-2 py-1'>
+                                                Name
+                                            </div>
                                         </div>
                                     </div>
                                     <p className='absolute text-gray-400 -bottom-7 left-0'>
@@ -317,7 +326,7 @@ const page = () => {
                                 </div>
                             </div>
                         </div>  
-                        <div className={` ${cabin.className} relative mx-2 w-[80%] h-fit mb-10 border-l-8 p-4 rounded-md border-[#b91c1c] bg-[#7f1d1d] text-white font-bold`}>
+                        <div className={` ${cabin.className} relative w-[90%] mx-auto h-fit mt-8 border-l-8 p-4 rounded-md border-[#b91c1c] bg-[#7f1d1d] text-white font-bold`}>
                             <p className='pb-3 pt-6'>
                                 your account needs to be fully completed so the system can recognize you as a verified user. This usually means filling in all required details such as your name, email, and profile information
                             </p>
@@ -330,10 +339,6 @@ const page = () => {
                     </div>
 
 
-                    <button onClick={findPartner} className={`${rethinkSans.className} flex  items-center gap-2 p-2 mx-auto my-2 font-bold rounded-full transition-colors duration-200 ease-linear bg-gray-300 border-gray-500 shadow-md cursor-pointer text-[#031d31]  border-[1px]`} >
-                        Start Looking
-                        <Binoculars/>
-                    </button>
                 </div>
                 
             </div>
