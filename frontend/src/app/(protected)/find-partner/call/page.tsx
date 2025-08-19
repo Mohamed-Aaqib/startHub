@@ -430,7 +430,7 @@ const page = () => {
                         </div>
                     )}
 
-                    <div className='shadow-[0_4px_6px_rgba(0,0,0,0.5),0_8px_12px_rgba(0,0,0,0.4)] flex items-center justify-between gap-4 mt-15 bg-[#1b1919] p-1 rounded-full max-w-3xl mx-auto border-b-4 border-[#282626]'>
+                    <div className='shadow-[0_4px_6px_rgba(0,0,0,0.5),0_8px_12px_rgba(0,0,0,0.4)] flex items-center justify-between gap-4 mt-15 bg-[#1b1919] p-1 rounded-full max-w-3xl mx-auto border-b-2 border-[#282626]'>
                         <div className='space-x-5 pl-2'>
                             <button 
                                 onClick={toggleVideo} 

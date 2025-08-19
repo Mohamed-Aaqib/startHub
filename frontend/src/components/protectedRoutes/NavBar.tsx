@@ -1,5 +1,5 @@
 "use client"
-import { AudioLines, CalendarDays, CreditCard, FolderGit2, Landmark, LayoutDashboard, Lightbulb, ListChecks, MessagesSquare, NotebookPen, Puzzle, Sparkles, User, UserRoundPen, Users } from 'lucide-react'
+import { AudioLines, BriefcaseBusiness, CalendarDays, ChartNetwork, CreditCard, FolderGit2, Landmark, LayoutDashboard, Lightbulb, ListChecks, MessagesSquare, NotebookPen, Pencil, Puzzle, Sparkles, User, UserRoundPen, Users } from 'lucide-react'
 import React, { useState, useRef, useEffect } from "react";
 import NavIcons from './navbarItems/NavIcons';
 import { useRouter } from 'next/navigation';
@@ -15,14 +15,14 @@ const NavBar = () => {
 
     const navElems:INavElems[] = [
         {
-            Icon:Users,
-            route:"/find-partner",
-            routeName:"find your partner"
-        },
-        {
             Icon:MessagesSquare,
             route:"/socials",
             routeName:"messages"
+        },
+        {
+            Icon:Users,
+            route:"/find-partner",
+            routeName:"find your partner"
         },
         {
             Icon:Lightbulb,
@@ -45,9 +45,9 @@ const NavBar = () => {
             routeName:"repos"
         },
         {
-            Icon:Landmark,
-            route:"/architecture-planning",
-            routeName:"architecture planning"
+            Icon:Pencil,
+            route:"/draw",
+            routeName:"draw"
         },
         {
             Icon:CalendarDays,
@@ -64,7 +64,16 @@ const NavBar = () => {
             route:"/team-calls",
             routeName:"voice calls"
         },
-
+        {
+            Icon:BriefcaseBusiness,
+            route:"/startups",
+            routeName:"startups"
+        },
+        {
+            Icon:ChartNetwork,
+            route:"/website-analysis",
+            routeName:"website analysis"
+        },
     ]
 
     const [hoverStyle, setHoverStyle] = useState({ left: 0, top: 0, width: 0, height: 0, visible: false });

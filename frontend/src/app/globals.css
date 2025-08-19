@@ -714,3 +714,7 @@ body {
   scrollbar-width: thin;          /* make scrollbar thin */
   scrollbar-color: rgba(0,0,0,0.2) transparent; /* thumb and track color */
 }
+
+.socialsb-footer-button{
+  @apply rounded-md cursor-pointer transition-shadow duration-200  bg-[#dedede] p-1 border-2 border-[#b8b8b8]
+}
