@@ -131,6 +131,95 @@ export const SOCIAL_DATA:SocialData  = {
             "content": "Ok that looks good im in, what about you guys?",
             "createdAt": "2025-08-19T19:15:00Z"
           },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b1234569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b1234569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b1234569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b1234569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b1234569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b1234569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b12f34569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b12f34569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b12f34569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b12f34569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+          {
+            "_id": "b201",
+            "chatId": "7502abcd1234567890abcdef",
+            "sender": "64f8a1d2c9f3b2a1b12f34569",
+            "type": "text",
+            "content": "So, where are we going this weekend?",
+            "createdAt": "2025-08-19T19:10:00Z"
+          },
+
         ]
       },
   

@@ -8,7 +8,12 @@ const nextConfig: NextConfig = {
         protocol:"https",
         hostname:"ichef.bbci.co.uk",
         pathname:"/**"
-      }
+      },
+      {
+        protocol:"https",
+        hostname:"dummyimage.com",
+        pathname:"/**"
+      },
     ]
   }
 };
