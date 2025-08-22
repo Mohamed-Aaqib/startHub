@@ -4,7 +4,7 @@ import MessageItem from './messages/MessageItem';
 import { TabType } from './ChatTabs';
 import Search from './tabs/Search';
 import Settings from './tabs/Settings';
-import { ImageUp } from 'lucide-react';
+import { ImageUp, SendHorizontal } from 'lucide-react';
 
 const MainChat = ({tabType}:{tabType:TabType}) => {
 
@@ -25,8 +25,9 @@ const MainChat = ({tabType}:{tabType:TabType}) => {
                     <div className='h-full flex-[0.9] py-1'>
                         <input className='w-full h-full outline-0' placeholder='Write a message...'/>
                     </div>
-                    <div className='flex-[0.1] flex items-center justify-end'>
-                        <ImageUp className='cursor-pointer text-[#393939]'/>
+                    <div className='flex-[0.1] flex items-center gap-2 justify-end'>
+                        <ImageUp className='cursor-pointer text-[#646464]'/>
+                        <SendHorizontal className='cursor-pointer text-[#737373] -mr-2 ml-4 hover:text-[#484848] ease-linear transtion-colors duration-200'/>
                     </div>
                 </div>
             </div>

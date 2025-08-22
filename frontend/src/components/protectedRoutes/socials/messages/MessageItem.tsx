@@ -31,10 +31,9 @@ const MessageItem = ({content,uid,media,user,showAvatar}:MessageItemI) => {
                     <Image alt='' fill className='object-cover rounded-full' src={"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/02EF/production/_99115700_ronaldo_getty4.jpg"}/>
                 )}
             </div>
-            <div className={`${cabin.className} rounded-md max-w-[400px] flex-wrap  py-2 px-3 text-white bg-[#4050ff] ${myId == uid && "text-black! bg-[#d3d3d3] ml-auto"}`}>
-                <div className={`w-full flex items-center justify-between py-[4px] text-[10px] text-[#dcdcdc] ${myId == uid && "text-[#646464]!"}`}>
+            <div className={`${cabin.className} rounded-md max-w-[400px] flex-wrap  py-2 px-3 text-[#373737] bg-[#ebebeb] ${myId == uid && "text-black! bg-[#d3d3d3] ml-auto"}`}>
+                <div className={`w-full flex items-center justify-between py-[4px] text-[10px] text-[#999999] ${myId == uid && "text-[#646464]!"}`}>
                     <p className='max-w-[60%] truncate'>{user}</p>
-                    <p>2025</p>
                 </div>
                 {content != "" ? content : <div/>}
                 {media && (
