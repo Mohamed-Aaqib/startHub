@@ -13,7 +13,7 @@ const MainChat = ({tabType}:{tabType:TabType}) => {
 
     return (
         <div className='w-full h-[91%]'>
-            <div className='max-h-[calc(540px*0.9)] overflow-y-scroll px-5 py-10   gap-2 flex flex-col items-start'>
+            <div className='max-h-[calc(540px*0.9)] overflow-y-scroll px-5 py-10  flex flex-col items-start justify-start'>
                 {SOCIAL_DATA.chats[1].messages.map((chat,idx) => {
                     const prevMsg = SOCIAL_DATA.chats[1].messages[idx - 1];
                     const showAvatar = !prevMsg || prevMsg.sender != chat.sender;
