@@ -1,4 +1,4 @@
-import { Cabin, Inter, Montserrat, Rethink_Sans } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import Image from 'next/image';
 import React from 'react'
 
@@ -14,7 +14,7 @@ interface MessageItemI{
     user:string;
 }
 
-const montserrat = Inter({
+const interFont = Inter({
     weight: ['400', '500', '600', '700'],
     subsets: ['latin'],
     variable: '--font-inter',
@@ -33,7 +33,7 @@ const MessageItem = ({content,uid,media,user,showAvatar}:MessageItemI) => {
                 {showAvatar && (
                     <p className={`max-w-[80%] font-bold truncate ${myId === user && "ml-auto"} `}>{user}</p>
                 )}
-                <div className={`${montserrat.className} ${showAvatar && "mt-2 mb-3"}  rounded-md flex-wrap text-[#373737] ${myId == uid && "text-black! ml-auto"}`}>
+                <div className={`${interFont.className} ${showAvatar && "mt-2 mb-3"}  rounded-md flex-wrap text-[#373737] ${myId == uid && "text-black! ml-auto"}`}>
                     {content != "" ? content : <div/>}
                     {media && (
                         <div className='w-full relative max-w-fit'>
