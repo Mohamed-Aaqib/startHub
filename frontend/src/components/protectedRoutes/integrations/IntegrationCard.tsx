@@ -27,7 +27,7 @@ const IntegrationCard = ({name,src,desc}:IntegrationCardI) => {
             <div className='w-full flex items-center justify-end px-4 py-2'>
                 <button onClick={() => {}} className='text-base font-medium cursor-pointer px-3 py-[4px] text-[#4e4e4e] outline-none rounded-md bg-white border border-[#c9c9c9] transition-all duration-300 ease-linear hover:border-[#7d7d7d] hover:bg-gray-50 hover:shadow-sm flex items-center gap-2 group'>
                     <span>Connect</span>
-                    <MoveUpRight className='w-4 h-4 transition-transform duration-300 ease-linear group-hover:translate-x-1 group-hover:-translate-y-1'/>
+                    <MoveUpRight className='w-4 h-4 transition-transform duration-300 ease-linear group-hover:translate-x-[2px] group-hover:-translate-y-[2px]'/>
                 </button>
             </div>
         </div>

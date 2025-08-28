@@ -41,21 +41,21 @@ const page = () => {
                                 <h2 className='text-[20px] font-semibold'>Name</h2>
                                 <p className='text-[#848484] text-[15px] '>Name of your startup</p>
                             </div>
-                            <input className='outline-none px-3 py-2 border-[1px] w-full transition-colors duration-300 ease-linear focus:border-[#7d7d7d] border-[#c9c9c9] rounded-md' placeholder='Startup Name'/>
+                            <input className='outline-none px-4 py-3 border border-[#e5e5e5] w-full transition-all duration-200 ease-linear focus:border-[#c9c9c9] focus:shadow-sm bg-white rounded-lg text-[#4e4e4e] placeholder:text-[#a0a0a0]' placeholder='Startup Name'/>
                         </div>
                         <div className='flex items-start gap-16  min-w-3xl '>
                             <div className='flex flex-col max-w-[200px] w-full'>
                                 <h2 className='text-[20px] font-semibold'>Description</h2>
                                 <p className='text-[#848484] text-[15px] '>Detailed description of your startup</p>
                             </div>
-                            <textarea rows={3} className='outline-none px-3 py-2 border-[1px] w-full transition-colors duration-300 ease-linear focus:border-[#7d7d7d] border-[#c9c9c9] rounded-md' placeholder='Startup Description'/>
+                            <textarea rows={3} className='outline-none px-4 py-3 border border-[#e5e5e5] w-full transition-all duration-200 ease-linear focus:border-[#c9c9c9] focus:shadow-sm bg-white rounded-lg text-[#4e4e4e] placeholder:text-[#a0a0a0] resize-none' placeholder='Startup Description'/>
                         </div>
                         <div className='flex items-start gap-16  min-w-3xl '>
                             <div className='flex flex-col max-w-[200px] w-full'>
                                 <h2 className='text-[20px] font-semibold'>Domain Name</h2>
                                 <p className='text-[#848484] text-[15px] '>Your websites domain name</p>
                             </div>
-                            <input className='outline-none px-3 py-2 border-[1px] w-full transition-colors duration-300 ease-linear focus:border-[#7d7d7d] border-[#c9c9c9] rounded-md' placeholder='Domain Name'/>
+                            <input className='outline-none px-4 py-3 border border-[#e5e5e5] w-full transition-all duration-200 ease-linear focus:border-[#c9c9c9] focus:shadow-sm bg-white rounded-lg text-[#4e4e4e] placeholder:text-[#a0a0a0]' placeholder='Domain Name'/>
                         </div>
                     </div>
                 </div>
