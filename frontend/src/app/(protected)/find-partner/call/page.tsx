@@ -72,7 +72,7 @@ const page = () => {
     
 
     useEffect(()=>{
-
+        // TODO : if no localvideoRef or isMounted, dont allow , add as dependency 
         navigator.mediaDevices.getUserMedia({video:true,audio:true}).then((stream)=>{
             localStream.current = stream;
             if(localVideoRef.current){
@@ -468,19 +468,23 @@ const page = () => {
 
                 </div>
                 
-                <div className='flex-[0.25] h-full border-l-2 border-[#d1d5dc] overflow-y-auto'>
-                    <div className='h-[90%] flex flex-col items-center justify-end gap-3 bg-[#f1f1f1] pb-3'>
+                <div className='flex-[0.25] h-full border-l-2 border-[#d1d5dc] flex flex-col'>
+                    <div className='flex-1 flex flex-col justify-end gap-2 bg-[#f7f7f7] p-3 overflow-y-auto'>
                         {messages.map(({user,messages},idx)=>(
-                            <div className={`${user == "me" ? "bg-gray-300 text-right border-l-4 border-l-gray-500" : "border-r-4 border-r-blue-500 bg-blue-300"} p-2 text-black w-full`} key={idx}>
-                                {messages}
+                            <div className={`w-full flex ${user == "me" ? "justify-end" : "justify-start"}`} key={idx}>
+                                <div className={`${user == "me" ? "bg-blue-600 text-white rounded-t-2xl rounded-l-2xl rounded-br-sm" : "bg-[#eaeaea] text-gray-900 rounded-t-2xl rounded-r-2xl rounded-bl-sm"} max-w-[85%] px-3 py-2 text-sm shadow-md break-words`}>
+                                    {messages}
+                                </div>
                             </div>
                         ))}
                     </div>
-                    <div className='h-[52px] flex flex-row'>
-                        <input type='text' placeholder='send a message' className='w-[90%] h-full p-2 focus:outline-0 border-2 border-blue-500'/>
-                        <button className='w-[10%] h-full flex items-center justify-center cursor-pointer bg-blue-500 text-white'>
-                            <Send/>
-                        </button>
+                    <div className='border-t border-[#e5e7eb] bg-[#f7f7f7] px-3 py-3'>
+                        <div className='w-full flex items-stretch gap-2'>
+                            <input type='text' placeholder='Type a message…' className='flex-1 bg-white text-gray-900 placeholder-gray-500 focus:outline-none min-w-0 h-11 px-4 border border-gray-300 rounded-md'/>
+                            <button className='h-11 px-4 flex cursor-pointer items-center justify-center rounded-md bg-blue-600 hover:bg-blue-500 text-white transition-colors'>
+                                <Send/>
+                            </button>
+                        </div>
                     </div>
                 </div>
 

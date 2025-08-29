@@ -13,67 +13,65 @@ const cabin = Cabin({
 
 const Search = () => {
     return (
-        <div className=' w-full h-[91%] p-2'>
-            <div className='w-4xl mx-auto mt-5 p-2'>
-                <div className='flex items-center gap-2 p-2 rounded-md bg-[#e1e1e1]'>
-                    <SearchIcon className='text-[#727272]'/>
-                    <input className='outline-none flex-1 px-2' placeholder='Search for files, messages, links'/>
+        <div className=' w-full h-[91%] p-3'>
+            <div className='max-w-4xl mx-auto mt-4 p-2'>
+                <div className='flex items-center gap-3 p-3 rounded-lg bg-white border border-gray-200 shadow-sm'>
+                    <SearchIcon className='w-5 h-5 text-gray-400'/>
+                    <input className='flex-1 outline-none text-[15px] text-gray-900 placeholder:text-gray-500' placeholder='Search'/>
                 </div>
-                <div className='py-2 flex items-center gap-3 mt-2'>
-                    <div className=' px-4 py-1 text-[14px] cursor-pointer bg-[#e9e9e9] text-[#282828] rounded-full'>
+                <div className='py-2 flex items-center gap-2 md:gap-3 mt-3'>
+                    <div className='px-3 py-1 text-xs cursor-pointer bg-white border border-gray-200 text-gray-600 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm'>
                         All Results
                     </div>
-                    <div className='px-4 py-1 text-[13px] cursor-pointer bg-[#e9e9e9] text-[#282828] rounded-full'>
+                    <div className='px-3 py-1 text-xs cursor-pointer bg-white border border-gray-200 text-gray-600 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm'>
                         Messages
                     </div>
-                    <div className='px-4 py-1 text-[13px] cursor-pointer bg-[#e9e9e9] text-[#282828] rounded-full'>
+                    <div className='px-3 py-1 text-xs cursor-pointer bg-white border border-gray-200 text-gray-600 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm'>
                         Links
                     </div>
-                    <div className='px-4 py-1 text-[13px] cursor-pointer bg-[#e9e9e9] text-[#282828] rounded-full'>
+                    <div className='px-3 py-1 text-xs cursor-pointer bg-white border border-gray-200 text-gray-600 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm'>
                         Files
                     </div>
                 </div>
-                <hr className='mt-3 mb-4 w-full text-[#c9c9c9]'/>
-                <div className=' mt-3 h-[350px] w-full overflow-auto'>
+                <hr className='mt-3 mb-4 w-full border-gray-200'/>
+                <div className='mt-3 h-[350px] w-full overflow-y-auto'>
                     <div>
-                        <h2 className='text-[#949494] font-bold capitalize text-[13px]'>TODAY</h2>
-                        <div className='flex flex-col items-start gap-y-2 py-2'>
-
-                            <div className='px-2 cursor-pointer  py-2 flex items-center gap-3  w-full'>
-                                <div className='p-1 bg-[#e9e9e9] rounded-md'>
-                                    <Box className='w-6 h-6' fill='#915404'/>
+                        <h2 className='text-gray-600 font-semibold tracking-wide capitalize text-xs mb-3'>TODAY</h2>
+                        <div className='flex flex-col items-start gap-y-3 py-1'>
+                            <div className='px-3 cursor-pointer py-2.5 flex items-center gap-3 w-full hover:bg-gray-50 rounded-lg transition-colors'>
+                                <div className='p-1.5 bg-gray-100 rounded-lg'>
+                                    <Box className='w-5 h-5' fill='#6b7280'/>
                                 </div>
                                 <div>
-                                    <div className='mt-4 flex items-center gap-x-2'>
-                                        <p className={`text-[18px]  text-[#575757] truncate max-w-[100px] ${cabin.className}`}>text.txt </p>
-                                        <p className='text-[#868686] text-[15px]'> - Mazziene</p>
+                                    <div className='flex items-center gap-x-2'>
+                                        <p className={`text-[15px] font-medium text-gray-900 truncate max-w-[280px] ${cabin.className}`}>text.txt</p>
+                                        <p className='text-gray-500 text-sm'>@Mazziene</p>
                                     </div>
-                                    <p className='text-[13px] text-[#868686]'>"Yeah this is a crazy text file man"</p>
+                                    <p className='text-sm text-gray-600 mt-0.5'>"Yeah this is a crazy text file man"</p>
                                 </div>
                             </div>
 
-                            <div className='px-2 cursor-pointer py-2 flex items-center gap-3  w-full'>
-                                <div className=' relative w-[31px] h-[31px] bg-[#e9e9e9] rounded-md'>
-                                    <Image alt='' className='object-cover rounded-md' fill src={'https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/02EF/production/_99115700_ronaldo_getty4.jpg'} />
-                                </div>
-                                <div className='mt-4'>
-                                    <p className={`text-[18px] text-[#575757] ${cabin.className}`}>"Man that was a great hatrick in the champions league"</p>
-                                    <p className='text-[13px]  text-[#868686]'> - Ronaldo</p>
-                                </div>
-                            </div>
-                            
-                            <div className='px-2 cursor-pointer transition-colors duration-300 hover:bg-[#e0e0e0] py-2 flex items-center gap-3  w-full'>
-                                <div className='p-1 bg-[#e9e9e9] rounded-md'>
-                                    <Link className='w-6 h-6' fill='#7c7c7c'/>
+                            <div className='px-3 cursor-pointer py-2.5 flex items-center gap-3 w-full hover:bg-gray-50 rounded-lg transition-colors'>
+                                <div className='relative w-8 h-8 bg-gray-100 rounded-lg'>
+                                    <Image alt='' className='object-cover rounded-lg' fill src={'https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/02EF/production/_99115700_ronaldo_getty4.jpg'} />
                                 </div>
                                 <div>
-                                    <div className='mt-4 flex items-center gap-x-2'>
-                                        <p className={`text-[18px]  text-[#575757] truncate max-w-[400px] underline ${cabin.className}`}>https://localhost:3000.ae</p>
-                                        <p className='text-[#868686] text-[15px]'> - Mazziene</p>
-                                    </div>
-                                    <p className='text-[13px] text-[#868686] mt-1'>"Yeah this is a crazy text file man"</p>
+                                    <p className={`text-[15px] font-medium text-gray-900 ${cabin.className}`}>"Man that was a great hatrick in the champions league"</p>
+                                    <p className='text-sm text-gray-500 mt-0.5'>@Ronaldo</p>
                                 </div>
+                            </div>
 
+                            <div className='px-3 cursor-pointer transition-colors duration-200 hover:bg-gray-50 py-2.5 flex items-center gap-3 w-full rounded-lg'>
+                                <div className='p-1.5 bg-gray-100 rounded-lg'>
+                                    <Link className='w-5 h-5' fill='#6b7280'/>
+                                </div>
+                                <div>
+                                    <div className='flex items-center gap-x-2'>
+                                        <p className={`text-[15px] font-medium text-gray-900 truncate max-w-[420px] underline ${cabin.className}`}>https://localhost:3000.ae</p>
+                                        <p className='text-sm text-gray-500'>@Mazziene</p>
+                                    </div>
+                                    <p className='text-sm text-gray-600 mt-0.5'>"Yeah this is a crazy text file man"</p>
+                                </div>
                             </div>
                         </div>
                     </div>

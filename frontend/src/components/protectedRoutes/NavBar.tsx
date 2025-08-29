@@ -128,7 +128,7 @@ const NavBar = () => {
 
     return (
         <nav className=' fixed bottom-0 w-full'>
-            <div className="bg-gray-100/80 w-full py-1 pl-6 pr-1 flex items-center justify-between shadow-sm backdrop-blur-sm border-2 border-gray-300">
+            <div className="bg-white w-full py-1 pl-6 pr-1 flex items-center justify-between shadow-sm backdrop-blur-sm border-2 border-gray-200">
                 <div className="relative flex items-center gap-5 text-gray-600 " ref={containerRef} onMouseLeave={handleLeave}>
                     <div
                         className="absolute bg-[rgb(139,197,238)] rounded transition-all duration-500 ease-[cubic-bezier(0.37,1.95,0.66,0.56)] -z-10"

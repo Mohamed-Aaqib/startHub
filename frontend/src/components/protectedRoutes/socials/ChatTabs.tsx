@@ -34,7 +34,7 @@ const ChatTabs = ({setTabType,tabType}:{setTabType:(tab:TabType) => void,tabType
     const tab = chat.type === "direct" ? mainTabs.filter((tb) => tb.name == "Chat" || tb.name == "Search") : mainTabs;
 
     return (
-        <div className=' w-full h-[9%] border-b-2 flex items-center justify-between py-1 px-2 border-gray-300 '>
+        <div className=' w-full h-[9%] flex items-center justify-between py-1 px-4 border-gray-300 '>
             <div className={`flex items-center gap-x-3 ${rethinkSans.className}`}>
                 <div className='relative flex items-center w-10 h-10 rounded-full'>
                     <Image alt='' src={chat.avatarUrl!} fill className='object-cover rounded-full'/>

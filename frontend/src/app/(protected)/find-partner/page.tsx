@@ -180,16 +180,17 @@ const page = () => {
         }
     }
 
-    const switchCamera = async () => {
+    const switchCamera = async (deviceId?: string) => {
 
-        if(!selectedVideo) return;
+        const targetDeviceId = deviceId || selectedVideo;
+        if(!targetDeviceId) return;
 
         if(streamRef.current){
             streamRef.current.getTracks().forEach(track => track.stop())
         }
 
         const stream = await navigator.mediaDevices.getUserMedia({
-            video:{deviceId:{exact:selectedVideo}},
+            video:{deviceId:{exact:targetDeviceId}},
             audio:true,
         })
 
@@ -198,16 +199,17 @@ const page = () => {
             localVideoRef.current.srcObject = stream;
         }
 
-        setUpMic(stream)
+        // setUpMic(stream)
         setIsCameraOn(true);
     }
 
-    const switchAudio = async () => {
-        if(!selectedAudio) return;
+    const switchAudio = async (deviceId?: string) => {
+        const targetDeviceId = deviceId || selectedAudio;
+        if(!targetDeviceId) return;
 
         const stream = await navigator.mediaDevices.getUserMedia({
             video:true,
-            audio:{deviceId:{exact:selectedAudio}}
+            audio:{deviceId:{exact:targetDeviceId}}
         })
 
         streamRef.current = stream;
@@ -227,7 +229,7 @@ const page = () => {
                 <div className='flex-[0.5]  h-full w-full px-1 py-2 space-y-2 '>
 
                     <div className='relative'>
-                        <div className={`h-[300px] p-[2px] w-[60%] relative block mx-auto rounded-2xl mt-10 overflow-hidden ${!isCameraOn && "hidden"}`}>
+                        <div className={`h-[300px] w-[60%] relative block mx-auto rounded-2xl mt-10 overflow-hidden border-2 border-[#b6b6b6] shadow-sm ${!isCameraOn && "hidden"}`}>
                             <div className={` ${rethinkSans.className} backdrop-blur-md font-medium text-[12px] absolute left-3 text-[#f1f1f1] rounded-md px-2 py-[2px] bg-[#272727]/60 top-3`}>
                                 Mohamed Aaqib
                             </div>
@@ -238,7 +240,7 @@ const page = () => {
                                 className={`w-full h-full object-cover rounded-2xl overflow-hidden`}/>
                         </div>
                         {!isCameraOn && (
-                            <div className={`h-[300px] p-[2px] w-[60%] bg-gradient-to-b from-gray-500 to-gray-700  flex items-center justify-center mx-auto rounded-2xl mt-10 overflow-hidden ${rethinkSans.className}`}>
+                            <div className={`h-[300px] w-[60%] bg-gradient-to-b from-gray-500 to-gray-700 flex items-center justify-center mx-auto rounded-2xl mt-10 overflow-hidden border-2 border-[#b6b6b6] shadow-sm ${rethinkSans.className}`}>
                                 <div className='p-3 font-bold text-3xl text-gray-900 '>
                                     Camera Is Off
                                 </div>                            
@@ -250,36 +252,41 @@ const page = () => {
 
                     </div>
 
-                    <div className='w-full flex flex-row items-center justify-start px-10 gap-10 mt-15 mb-5'>
+                    <div className='w-full flex flex-row items-center justify-between px-10 gap-6 mt-12 mb-5'>
                         {videoDevices.length > 1 && (
-                            <select className="media-select block w-full" value={selectedVideo || " "} onChange={(e) => setSelectedDeviceID(e.target.value)}>
-                                {videoDevices.map((device,idx) => (
-                                    <option key={device.deviceId || idx} value={device.deviceId}>
-                                        {device.label || `Camera ${idx + 1}`}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className='flex-1 text-center'>
+                                <label className='block text-[#666] text-[14px] font-medium mb-2'>Camera</label>
+                                <select className="media-select block w-full p-3 border border-[#e0e0e0] rounded-lg bg-white text-[#1a1a1a] focus:outline-none focus:border-[#c0c0c0] transition-colors" value={selectedVideo || " "} onChange={(e) => {
+                                    setSelectedDeviceID(e.target.value);
+                                    switchCamera(e.target.value);
+                                }}>
+                                    {videoDevices.map((device,idx) => (
+                                        <option key={device.deviceId || idx} value={device.deviceId}>
+                                            {device.label || `Camera ${idx + 1}`}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         )}
-                        <button onClick={switchCamera} className='px-3 py-1 bg-gray-500 text-gray-800 font-bold cursor-pointer border-gray-600 border-2 rounded-full block'>
-                            Switch 
-                        </button>
-                    </div>
-
-                    <div className='w-full flex flex-row items-center justify-start px-10 gap-10 my-5'>
+                        
                         {audioDevices.length > 1 && (
-                            <select className="media-select block" value={selectedAudio || " "} onChange={(e) => setSelectedAudioID(e.target.value)}>
-                                {audioDevices.map((device,idx) => (
-                                    <option key={device.deviceId} value={device.deviceId}>
-                                        {device.label || `Microphone ${idx+1}`}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className='flex-1 text-center'>
+                                <label className='block text-[#666] text-[14px] font-medium mb-2'>Microphone</label>
+                                <select className="media-select block w-full p-3 border border-[#e0e0e0] rounded-lg bg-white text-[#1a1a1a] focus:outline-none focus:border-[#c0c0c0] transition-colors" value={selectedAudio || " "} onChange={(e) => {
+                                    setSelectedAudioID(e.target.value);
+                                    switchAudio(e.target.value);
+                                }}>
+                                    {audioDevices.map((device,idx) => (
+                                        <option key={device.deviceId} value={device.deviceId}>
+                                            {device.label || `Microphone ${idx+1}`}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         )}
-                        <button onClick={switchAudio} className='px-3 py-1 bg-gray-500 text-gray-800 font-bold cursor-pointer border-gray-600 border-2 rounded-full block'>
-                            Switch
-                        </button>
                     </div>
-                    <button onClick={findPartner} className={`${rethinkSans.className} mx-auto looking-btn cursor-pointer border-none outline-none bg-gradient-to-br from-[#f9f9fb] to-[#e3e6eb] [box-shadow:0_4px_10px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.06)] transition-all duration-200 ease-in-out text-[#4a5568] flex items-center gap-2 px-5 py-2 rounded-full text-base font-bold`} >
+                    
+                    <button onClick={findPartner} className={`${rethinkSans.className} mx-auto looking-btn mt-10 cursor-pointer border-none outline-none bg-gradient-to-br from-[#f9f9fb] to-[#e3e6eb] [box-shadow:0_4px_10px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.06)] transition-all duration-200 ease-in-out text-[#4a5568] flex items-center gap-2 px-5 py-2 rounded-full text-base font-bold`} >
                         Start Looking
                         <Binoculars/>
                     </button>
@@ -298,7 +305,7 @@ const page = () => {
                                 </label>
                                 <textarea 
                                     id="ideal-user"
-                                    className=' w-full p-3 rounded-lg border-2 border-gray-300 focus:ring-blue-500 focus:outline-none focus:border-blue-600  transition duration-300 bg-gray-200 text-gray-700 placeholder-gray-400'
+                                    className='w-full p-4 rounded-lg border border-[#e0e0e0] focus:outline-none focus:border-[#c0c0c0] focus:shadow-md transition-all duration-200 bg-white text-[#1a1a1a] placeholder:text-[#999] shadow-sm'
                                     placeholder='I want to match someone who is good in php and java, and can play some games... '
                                     rows={2}
                                 />
@@ -308,31 +315,28 @@ const page = () => {
                                     <label htmlFor='tags' className='text-gray-600 block font-bold'>
                                         Tags to identify the user
                                     </label>
-                                    <div className='bg-gray-200 border-gray-300 border-2 rounded-md w-fit flex items-center'>
-                                        <input id='tags' type='text' className=' w-[90%]  text-gray-700 placeholder-gray-400 p-2 rounded-md ring-0 transition duration-300 focus:ring-0 focus:outline-none focus:border-blue-600' placeholder='add tags'/>
+                                    <div className='bg-white border border-[#e0e0e0] rounded-lg w-fit flex items-center shadow-sm'>
+                                        <input id='tags' type='text' className='w-[90%] text-[#1a1a1a] placeholder:text-[#999] p-3 rounded-l-lg outline-none transition-all duration-200 focus:border-[#c0c0c0] bg-transparent' placeholder='add tags'/>
                                         <div className='flex items-center gap-2 px-2 '>
-                                            <div className='flex items-center justify-center bg-white rounded-md py-[2px] pl-[6px] pr-[4px] space-x-2'>
+                                            <div className='flex items-center justify-center bg-[#e5e5e5] rounded-md py-[2px] pl-[6px] pr-[4px] space-x-2'>
                                                 <span className='text-black font-medium'>React</span>
-                                                <X className='text-[#a2a2a2] cursor-pointer transition-colors duration-200 ease-linear hover:bg-[#ecebeb] rounded-md h-5 w-5 p-[2px]' strokeWidth={3}/>
+                                                <X className='text-[#a2a2a2] cursor-pointer transition-colors duration-200 ease-linear hover:bg-[#dadada] rounded-md h-5 w-5 p-[2px]' strokeWidth={3}/>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>  
-                        <div className={` ${cabin.className} relative w-[90%] mx-auto h-fit mt-0 border-l-8 p-4 rounded-md border-[#b91c1c] bg-[#7f1d1d] text-white font-bold`}>
-                            <p className='pb-3 pt-6'>
-                                your account needs to be fully completed so the system can recognize you as a verified user. This usually means filling in all required details such as your name, email, and profile information
+                        <div className={`${cabin.className} relative w-[90%] mx-auto h-fit mt-0 border-l-4 p-6 rounded-lg border-red-700 bg-red-600 text-white shadow-sm`}>
+                            <p className='pb-3 pt-8 text-[15px] leading-relaxed font-medium'>
+                                Your account needs to be fully completed so the system can recognize you as a verified user. This usually means filling in all required details such as your name, email, and profile information.
                             </p>
-
-                            <div className='rounded-full flex items-center gap-3 text-[#b91c1c] absolute top-1 left-2 '>
-                                <Info/>
-                                <h1 className='text-2xl'>Important Note</h1>
+                            <div className='flex items-center gap-2 text-red-100 absolute top-4 left-4'>
+                                <Info className='w-6 h-6' strokeWidth={2.5}/>
+                                <h1 className='text-[21px] font-bold'>Important Note</h1>
                             </div>
                         </div>
                     </div>
-
-
                 </div>
                 
             </div>

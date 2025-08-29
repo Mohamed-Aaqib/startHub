@@ -17,7 +17,7 @@ const page = () => {
                                 <div className='flex items-center relative rounded-md w-[25px] h-[25px]'>
                                     <Image alt='Associations' src={"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/02EF/production/_99115700_ronaldo_getty4.jpg"} fill className='object-cover rounded-md' />
                                 </div>
-                            </div>
+                        </div>
                             <div className='flex items-center gap-3'>
                                 <button className='px-5 py-2 border border-[#e0e0e0] bg-white text-[#666] rounded-lg font-medium text-[14px] hover:bg-gray-50 transition-colors'>
                                     Message
@@ -25,8 +25,8 @@ const page = () => {
                                 <button className='px-5 py-2 bg-blue-600 text-white rounded-lg font-medium text-[14px] hover:bg-blue-700 transition-colors'>
                                     Share profile
                                 </button>
+                                </div>
                             </div>
-                        </div>
                         
                         <div className='flex items-center gap-6 ml-auto mt-2'>
                             <div className='flex items-center gap-2'>
@@ -42,15 +42,15 @@ const page = () => {
                             <div className='flex items-center gap-2'>
                                 <Calendar className='w-4 h-4 text-[#666]' />
                                 <span className='text-[#666] text-[12px]'>19th Feb 2019</span>
-                            </div>
                         </div>
+                    </div>
 
                     </div>
                     <div className='bg-[#f8f8f8] border border-[#e0e0e0] rounded-lg p-4'>
                         <p className='text-[#666] max-h-[121.1px] overflow-y-auto text-[15px] leading-relaxed'>
-                            This is the text area where things happens and happena and happenthings happens and happena and happenthings happens and happena and happen
-                            This is the text area where things happens and happena and happenthings happens and happena and happenthings happens and happena and happen
-                            This is the text area where things happens and happena and happenthings happens and happena and happenthings happens and happena and happen
+                        This is the text area where things happens and happena and happenthings happens and happena and happenthings happens and happena and happen
+                        This is the text area where things happens and happena and happenthings happens and happena and happenthings happens and happena and happen
+                        This is the text area where things happens and happena and happenthings happens and happena and happenthings happens and happena and happen
                         </p>
                     </div>
                 </div>
@@ -62,7 +62,7 @@ const page = () => {
                         <div className='flex flex-wrap gap-3'>
                             <div className='px-4 py-2 bg-white border border-[#e0e0e0] rounded-lg text-[#666] text-[14px] font-medium'>
                                 AI Development
-                            </div>
+            </div>
                             <div className='px-4 py-2 bg-white border border-[#e0e0e0] rounded-lg text-[#666] text-[14px] font-medium'>
                                 Cloud Engineering
                             </div>
@@ -71,12 +71,12 @@ const page = () => {
                             </div>
                             <div className='px-4 py-2 bg-white border border-[#e0e0e0] rounded-lg text-[#666] text-[14px] font-medium'>
                                 DevOps
-                            </div>
+                        </div>
                             <div className='px-4 py-2 bg-white border border-[#e0e0e0] rounded-lg text-[#666] text-[14px] font-medium'>
                                 Machine Learning
-                            </div>
                         </div>
-                        
+                    </div>
+
                         <div className='mt-4'>
                             <div className='flex items-center w-fit gap-2 flex-wrap min-h-[40px] px-3 py-2 border border-[#e0e0e0] rounded-lg bg-white focus-within:border-[#c0c0c0] transition-colors'>
                                 <input 
@@ -87,9 +87,9 @@ const page = () => {
                                     <PlusCircle className='w-4 h-4'/>
                                 </button>
                             </div>
-                        </div>
-                    </div>        
-                </div>
+                    </div>
+                    </div>
+                    </div>
                 <hr className='w-full border-t border-[#e5e5e5] my-8'/>
                 <div className='mb-4'>
                     <h2 className='text-[#333333] text-[20px] font-bold'>Social Links</h2>
@@ -119,7 +119,7 @@ const page = () => {
                 </div>
                 <hr className='w-full border-t border-[#e5e5e5] my-8'/>
             </section>
-            
+                
             <div className='h-[51.2px]'/>
         </div>
     )

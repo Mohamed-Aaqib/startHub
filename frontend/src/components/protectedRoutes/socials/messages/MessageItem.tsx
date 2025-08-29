@@ -31,9 +31,9 @@ const MessageItem = ({content,uid,media,user,showAvatar}:MessageItemI) => {
             </div>
             <div className='flex flex-col  w-[80%]'>
                 {showAvatar && (
-                    <p className={`max-w-[80%] font-bold truncate ${myId === user && "ml-auto"} `}>{user}</p>
+                    <p className={`max-w-[80%] truncate ${myId === user && "ml-auto"} text-[11px] md:text-xs font-semibold tracking-wide text-gray-500`}>{user}</p>
                 )}
-                <div className={`${interFont.className} ${showAvatar && "mt-2 mb-3"}  rounded-md flex-wrap text-[#373737] ${myId == uid && "text-black! ml-auto"}`}>
+                <div className={`${interFont.className} ${showAvatar && "mt-2 mb-3"}  rounded-md flex-wrap text-gray-800 text-sm md:text-[14px] leading-6 ${myId == uid && "text-black! ml-auto"}`}>
                     {content != "" ? content : <div/>}
                     {media && (
                         <div className='w-full relative max-w-fit'>
