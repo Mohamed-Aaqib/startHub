@@ -2,6 +2,7 @@
 import { Rethink_Sans } from 'next/font/google';
 import React, { useEffect, useState } from 'react'
 import StockVideo from './StockVideo';
+import { useScroll, useSpring } from 'framer-motion';
 
 const rethinkSans = Rethink_Sans({
     subsets: ['latin'],
@@ -13,7 +14,6 @@ export interface IHeroCards{
     img:string
     className:string
 }
-
 
 const heroSmCards: IHeroCards[] = [
     {
@@ -30,11 +30,11 @@ const heroSmCards: IHeroCards[] = [
     },
     {
         img:"stock-img4.jpg",
-        className:"absolute bottom-20 left-[200px] z-10"
+        className:"absolute bottom-0 left-[200px] z-10"
     },    
     {
         img:"stock-img5.jpg",
-        className:"absolute bottom-20 right-[250px] z-10"
+        className:"absolute bottom-0 right-[250px] z-10"
     },    
     {
         img:"stock-img6.jpg",
@@ -44,18 +44,22 @@ const heroSmCards: IHeroCards[] = [
         img:"stock-img7.jpg",
         className:"absolute bottom-[1200px] left-1/2 z-40"
     },    
-
 ];
 
 const Hero = () => {
 
-    const [scrollY,setScrollY] = useState<number>(0);
     const [stopSticky,setStopSticky] = useState<boolean>(false);
 
-    useEffect(() => {
+    const {scrollY} = useScroll();
+    const smoothY = useSpring(scrollY, {
+        stiffness: 50,    // Slightly lower for smoother movement
+        damping: 15,      // Higher damping for less bounce
+        mass: 0.8,        // Slightly heavier feel
+    });
 
+    
+    useEffect(() => {
         const handleScroll = () => {
-            setScrollY(window.scrollY);
             setStopSticky(window.scrollY > window.innerHeight * 2.95)
         }
 
@@ -83,7 +87,7 @@ const Hero = () => {
                 </p>
             </div>
             {heroSmCards.map(({className,img},idx) => (
-                <StockVideo key={idx} className={className} scrollY={scrollY} img={img} />
+                <StockVideo key={idx} smoothY={smoothY} className={className} img={img} index={idx} />
             ))}
             <div
                 className="absolute bottom-0 left-1/2 border-b-0 z-20 -translate-x-1/2 w-20 h-10 bg-black rounded-t-full border-t-4 border-x-4 border-[#111cb6]"
