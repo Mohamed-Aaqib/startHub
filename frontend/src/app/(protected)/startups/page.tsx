@@ -1,4 +1,4 @@
-import { ImageUp, Save } from 'lucide-react';
+import { ImageUp, Save, SquarePen } from 'lucide-react';
 import { Noto_Sans } from 'next/font/google';
 import Image from 'next/image';
 import React from 'react'
@@ -15,9 +15,8 @@ const page = () => {
         <div className={`flex flex-col h-full w-full ${notoSansFont.className}`}>
             <div className='flex-1 flex flex-col p-2'>
                 <div className='font-semibold text-3xl p-5 flex items-start justify-between'>
-                    <h1>Startup</h1>
                     <button className='text-base outline-none cursor-pointer border border-[#c9c9c9] ml-auto mr-10 bg-white text-[#4e4e4e] gap-2 font-medium rounded-md py-1 px-4 w-fit flex items-center transition-all duration-300 ease-linear hover:border-[#7d7d7d] hover:bg-gray-50 hover:shadow-sm'>
-                        Save <Save className='w-5 h-5'/>
+                        Create <SquarePen className='w-5 h-5'/>
                     </button>
                 </div>
                 <div className='flex-1 p-5 h-full gap-16 overflow-y-auto flex flex-col max-h-[552px]'>

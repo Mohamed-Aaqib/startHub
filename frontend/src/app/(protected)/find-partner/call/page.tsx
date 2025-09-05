@@ -379,7 +379,6 @@ const page = () => {
 
     return (
         <div className='h-screen w-full flex flex-col bg-green-50'>
-            <NavBar/>
             <div className='flex flex-row h-full overflow-y-auto'>
                 <div className=' p-2 flex-[0.75]'>
                     {errorMsg && (
@@ -460,7 +459,7 @@ const page = () => {
                         </div>
                         <button 
                             onClick={handleSkip} 
-                            className='bg-red-700 border-red-900 border-2 shadow-md cursor-pointer hover:bg-red-800 flex items-center text-white px-6 py-2 rounded-full font-semibold transition-all'
+                            className='bg-red-700 border-red-900 border-2 shadow-md cursor-pointer hover:bg-red-800 flex items-center text-white px-6 p-2 rounded-full font-semibold transition-all'
                         >
                             Skip <ArrowBigRightDashIcon/>
                         </button>

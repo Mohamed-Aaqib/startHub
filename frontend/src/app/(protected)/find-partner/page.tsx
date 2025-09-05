@@ -222,10 +222,7 @@ const page = () => {
 
     return (
         <div className='h-screen flex flex-col'>
-            
-            <NavBar/>
-
-            <div className='flex flex-row overflow-y-scroll flex-1 h-full'>
+            <div className='flex flex-row overflow-hidden flex-1 h-full py-1'>
                 <div className='flex-[0.5]  h-full w-full px-1 py-2 space-y-2 '>
 
                     <div className='relative'>
@@ -286,9 +283,9 @@ const page = () => {
                         )}
                     </div>
                     
-                    <button onClick={findPartner} className={`${rethinkSans.className} mx-auto looking-btn mt-10 cursor-pointer border-none outline-none bg-gradient-to-br from-[#f9f9fb] to-[#e3e6eb] [box-shadow:0_4px_10px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.06)] transition-all duration-200 ease-in-out text-[#4a5568] flex items-center gap-2 px-5 py-2 rounded-full text-base font-bold`} >
-                        Start Looking
-                        <Binoculars/>
+                    <button onClick={findPartner} className={`${rethinkSans.className} mx-auto looking-btn mt-10 cursor-pointer border border-gray-200 outline-none bg-gradient-to-br from-[#f9f9fb] to-[#e3e6eb] [box-shadow:0_4px_10px_rgba(0,0,0,0.1),0_2px_4px_rgba(0,0,0,0.06)] transition-all duration-200 ease-in-out text-[#4a5568] flex items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold`} >
+                        Start Searching
+                        <Binoculars className='w-4 h-4'/>
                     </button>
 
                     <canvas id='mic-visualizer' className=' hidden w-full h-[20px] bg-black rounded-lg mt-2'/>
