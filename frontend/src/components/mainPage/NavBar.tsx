@@ -78,7 +78,7 @@ const NavBar = () => {
 
                 <section className={'flex items-center gap-16 group justify-between font-bold ' + rethinkSans.className}>
                     <p className='nav-items'>Features</p>
-                    <p className='nav-items'>Pricing</p>
+                    {/* <p className='nav-items'>Pricing</p> */}
                     <p className='nav-items'>About</p>
                     <p className='nav-items'>Contact</p>
                 </section>

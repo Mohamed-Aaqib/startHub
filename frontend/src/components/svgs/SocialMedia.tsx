@@ -3,8 +3,8 @@ import React from 'react';
 export const LinkedInIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        width={16}
-        height={16}
+        width={23}
+        height={23}
         fill="currentColor"
         viewBox="0 0 16 16"
         {...props}
@@ -19,8 +19,8 @@ export const LinkedInIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export const GitHubIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        width={16}
-        height={16}
+        width={23}
+        height={23}
         fill="currentColor"
         viewBox="0 0 16 16"
         {...props}
@@ -35,8 +35,8 @@ export const GitHubIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        width={16}
-        height={16}
+        width={23}
+        height={23}
         fill="currentColor"
         viewBox="0 0 16 16"
         {...props}
@@ -52,11 +52,11 @@ export const TwitterXIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 1200 1227"
-        width={16}
-        height={16}
+        width={23}
+        height={23}
         fill="currentColor"
         {...props}
-        >
+    >
         <path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284Z" />
     </svg>
 );
