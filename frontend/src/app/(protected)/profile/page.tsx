@@ -1,4 +1,4 @@
-import { PlusCircle, SquareArrowOutUpRight, Users, Building2, Calendar } from 'lucide-react'
+import { PlusCircle, SquareArrowOutUpRight, Users, Building2, Calendar, Save } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 
@@ -17,16 +17,16 @@ const page = () => {
                                 <div className='flex items-center relative rounded-md w-[25px] h-[25px]'>
                                     <Image alt='Associations' src={"https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/02EF/production/_99115700_ronaldo_getty4.jpg"} fill className='object-cover rounded-md' />
                                 </div>
-                        </div>
-                            <div className='flex items-center gap-3'>
-                                <button className='px-5 py-2 border border-[#e0e0e0] bg-white text-[#666] rounded-lg font-medium text-[14px] hover:bg-gray-50 transition-colors'>
+                            </div>
+                            <div className='flex items-center gap-3 w-full'>
+                                <button className=' cursor-pointer px-5 py-2 border border-[#e0e0e0] bg-white text-[#666] rounded-lg font-medium text-[14px] hover:bg-gray-50 transition-colors'>
                                     Message
                                 </button>
-                                <button className='px-5 py-2 bg-blue-600 text-white rounded-lg font-medium text-[14px] hover:bg-blue-700 transition-colors'>
-                                    Share profile
+                                <button className='flex items-center gap-3 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-[14px] hover:bg-blue-700 transition-colors'>
+                                    Save Profile <Save className='w-5 h-5'/>
                                 </button>
-                                </div>
                             </div>
+                        </div>
                         
                         <div className='flex items-center gap-6 ml-auto mt-2'>
                             <div className='flex items-center gap-2'>
@@ -42,8 +42,8 @@ const page = () => {
                             <div className='flex items-center gap-2'>
                                 <Calendar className='w-4 h-4 text-[#666]' />
                                 <span className='text-[#666] text-[12px]'>19th Feb 2019</span>
+                            </div>
                         </div>
-                    </div>
 
                     </div>
                     <div className='bg-[#f8f8f8] border border-[#e0e0e0] rounded-lg p-4'>
@@ -55,14 +55,14 @@ const page = () => {
                     </div>
                 </div>
             </section>
-            <section className='flex-[0.7] w-full max-w-5xl pt-7 px-8 bg-white'>
+            <section className='flex-[0.7] w-full max-w-5xl pt-6 px-8 bg-white'>
                 <div className='w-full'>
                     <div className='w-full'>
                         <h2 className='text-[20px] font-bold text-[#1a1a1a] mb-4'>Tags</h2>
                         <div className='flex flex-wrap gap-3'>
                             <div className='px-4 py-2 bg-white border border-[#e0e0e0] rounded-lg text-[#666] text-[14px] font-medium'>
                                 AI Development
-            </div>
+                            </div>
                             <div className='px-4 py-2 bg-white border border-[#e0e0e0] rounded-lg text-[#666] text-[14px] font-medium'>
                                 Cloud Engineering
                             </div>
@@ -90,7 +90,7 @@ const page = () => {
                     </div>
                     </div>
                     </div>
-                <hr className='w-full border-t border-[#e5e5e5] my-8'/>
+                <hr className='w-full border-t border-[#e5e5e5] my-6'/>
                 <div className='mb-4'>
                     <h2 className='text-[#333333] text-[20px] font-bold'>Social Links</h2>
                 </div>
