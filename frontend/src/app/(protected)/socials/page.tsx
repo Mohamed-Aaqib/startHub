@@ -20,8 +20,6 @@ const page = () => {
                             <rect x="30" y="50" width="40" height="3" rx="1.5" fill="#9CA3AF" />
                             <rect x="30" y="58" width="55" height="3" rx="1.5" fill="#9CA3AF" />
                             <rect x="30" y="66" width="35" height="3" rx="1.5" fill="#9CA3AF" />
-
-
                                                     
                             <rect x="100" y="70" width="80" height="45" rx="20" fill="#DBEAFE" />
                             <rect x="110" y="80" width="45" height="3" rx="1.5" fill="#93C5FD" />
